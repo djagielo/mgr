@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>JPPF Application</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>classes</name>
+			<type>2</type>
+			<location>X:/Politechnika/Magisterka/praca magisterka/frameworki/JPPF/JPPF-4.1.3-application-template/classes</location>
+		</link>
+		<link>
+			<name>config</name>
+			<type>2</type>
+			<location>X:/Politechnika/Magisterka/praca magisterka/frameworki/JPPF/JPPF-4.1.3-application-template/config</location>
+		</link>
+		<link>
+			<name>src</name>
+			<type>2</type>
+			<location>X:/Politechnika/Magisterka/praca magisterka/frameworki/JPPF/JPPF-4.1.3-application-template/src</location>
+		</link>
+	</linkedResources>
+</projectDescription>
