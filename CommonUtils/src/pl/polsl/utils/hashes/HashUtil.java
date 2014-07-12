@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class HashUtil implements Serializable{
-	MessageDigest md;
+	private MessageDigest md;
 	public HashUtil(){
 		try {
 			md = MessageDigest.getInstance("SHA-256");
