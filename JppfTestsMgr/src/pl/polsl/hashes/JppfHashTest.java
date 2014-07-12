@@ -18,8 +18,8 @@ import pl.polsl.utils.hashes.DataPreparator;
 import pl.polsl.utils.hashes.HashUtil;
 import pl.polsl.utils.hashes.MultipleHashUtil;
 
-public class HashTest {
-	private static Logger logger = Logger.getLogger(HashTest.class);
+public class JppfHashTest {
+	private static Logger logger = Logger.getLogger(JppfHashTest.class);
 	private static final int PARTITION_SIZE = 100;
 	//private static String PATH_TO_DICTIONARY = "X:\\Politechnika\\Magisterka\\praca magisterka\\dane testowe\\rockyou.txt";
 	private static String PATH_TO_DICTIONARY = "testdata/john.txt";
