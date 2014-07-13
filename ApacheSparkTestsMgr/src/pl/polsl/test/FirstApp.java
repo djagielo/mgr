@@ -1,4 +1,4 @@
-package pl.polsl.hashes;
+package pl.polsl.test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 
-public class ApacheSparkHashTest {
+public class FirstApp {
 
 	public static void main(String[] args) {
 		 	SparkConf sparkConf = new SparkConf().setAppName("JavaSparkPi").setMaster("local");
