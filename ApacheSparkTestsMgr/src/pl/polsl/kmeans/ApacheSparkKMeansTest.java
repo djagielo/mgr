@@ -1,6 +1,7 @@
 package pl.polsl.kmeans;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ static Vector parseVector(String line) {
     return out.divide(numVectors);
   }
   
-  static Vector average(Iterable<Vector> ps) {
+  public static Vector average(Iterable<Vector> ps) {
 	    int numVectors = 0;
 	    Iterator<Vector> it = ps.iterator();
 	    Vector out = null;
@@ -72,11 +73,6 @@ static Vector parseVector(String line) {
 	    	}
 	    }
 	    
-	   /* Vector out = new Vector(ps.get(0).elements());
-	    // start from i = 1 since we already copied index 0 above
-	    for (int i = 1; i < numVectors; i++) {
-	      out.addInPlace(ps.get(i));
-	    }*/
 	    return out.divide(numVectors);
 	  }
 
@@ -101,7 +97,6 @@ static Vector parseVector(String line) {
     ).cache();
 
     final List<Vector> centroids = data.takeSample(false, K, 42);
-
     double tempDist;
     do {
 
@@ -131,20 +126,34 @@ static Vector parseVector(String line) {
           }
         }).collectAsMap();
       tempDist = 0.0;
+  	
       for (int i = 0; i < K; i++) {
         tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
       }
       for (Map.Entry<Integer, Vector> t: newCentroids.entrySet()) {
         centroids.set(t.getKey(), t.getValue());
       }
+  	
       System.out.println("Finished iteration (delta = " + tempDist + ")");
     } while (tempDist > convergeDist);
 
-    System.out.println("Final centers:");
+    System.out.println(String.format("Final centers(%s):", centroids.size()));
     for (Vector c : centroids)
       System.out.println(c);
 
     System.exit(0);
 
   }
+/*  	private static List<Vector> takeSample(JavaRDD<Vector> data, int size){
+  		return takeSample(data.toArray(), size);
+  	}
+	private static List<Vector> takeSample(List<Vector> data, int size){
+		List<Vector> out = new LinkedList<>();
+		
+		for(int i=0; i < size; i++){
+			out.add(data.get(i));
+		}
+		
+		return out;
+	}*/
 }
