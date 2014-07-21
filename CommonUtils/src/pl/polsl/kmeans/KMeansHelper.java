@@ -3,10 +3,17 @@ package pl.polsl.kmeans;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.Map.Entry;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
@@ -59,5 +66,32 @@ public class KMeansHelper implements Serializable {
 			
 				return out;
 			}
+		}
+		
+		public static List<RealVector> takeSample(List<RealVector> data, int size){
+			List<RealVector> out = new LinkedList<>();
+			Random random = new Random(System.currentTimeMillis());
+			int s = data.size();
+			List<Integer> usedIndexes = new ArrayList<Integer>();
+			for(int i = 0; i < size; i++){
+				int randomIndex= -1;
+				do{
+					randomIndex = random.nextInt(s-1);
+				}while(randomIndex < 0 || usedIndexes.contains(randomIndex));		
+				out.add(data.get(randomIndex));
+				usedIndexes.add(randomIndex);
+			}
+			
+			return out;
+		}
+		
+		public static Collection<? extends Pair<Integer, List<RealVector>>> toListOfPairs(Set<Entry<Integer, List<RealVector>>> entrySet) {
+			List<Pair<Integer, List<RealVector>>> out = new LinkedList<>();
+			
+			for(Entry<Integer, List<RealVector>> entry: entrySet){
+				out.add(new ImmutablePair<Integer, List<RealVector>>(entry.getKey(), entry.getValue()));
+			}
+			
+			return out;
 		}
 }

@@ -25,7 +25,6 @@ import org.gridgain.grid.lang.GridReducer;
 public class GridGainKmeansTest {
 	
 	private static final String SPLIT_MARK = ",";
-	private static Logger logger = Logger.getLogger(GridGainKmeansTest.class);
 	public static void main(String[] args) throws GridException, FileNotFoundException {
 		if (args.length < 3) {
 			System.err.println("Usage: JavaKMeans <file> <k> <convergeDist>");
@@ -39,7 +38,7 @@ public class GridGainKmeansTest {
 		    // wczytanie pliku do kolekcji
 		    List<RealVector> data = KMeansHelper.readDataFromFile(path, SPLIT_MARK);
 		    // pobranie próbki K punktów z kolekcji
-		    final List<RealVector> centroids = takeSample(data, K);
+		    final List<RealVector> centroids = KMeansHelper.takeSample(data, K);
 		    
 		    double tempDist;
 		    do{
@@ -135,34 +134,5 @@ public class GridGainKmeansTest {
 		
 		return out;
 	}
-
-
-
-	private static List<RealVector> takeSample(List<RealVector> data, int size){
-		List<RealVector> out = new LinkedList<>();
-		Random random = new Random(System.currentTimeMillis());
-		int s = data.size();
-		List<Integer> usedIndexes = new ArrayList<Integer>();
-		for(int i = 0; i < size; i++){
-			int randomIndex= -1;
-			do{
-				randomIndex = random.nextInt(s-1);
-			}while(randomIndex < 0 || usedIndexes.contains(randomIndex));		
-			out.add(data.get(randomIndex));
-			usedIndexes.add(randomIndex);
-		}
-		
-		return out;
-	}
-	
-/*	private static List<RealVector> takeSample(List<RealVector> data, int size){
-		List<RealVector> out = new LinkedList<>();
-		
-		for(int i=0; i < size; i++){
-			out.add(data.get(i));
-		}
-		
-		return out;
-	}*/
 
 }
