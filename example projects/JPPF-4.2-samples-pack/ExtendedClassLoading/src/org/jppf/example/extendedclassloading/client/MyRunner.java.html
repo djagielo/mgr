@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head>
+<title></title>
+  <style type="text/css">
+    <!--code { font-family: Courier New, Courier; font-size: 10pt; margin: 0px; }-->
+  </style>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+</head><body>
+
+
+<!-- ======================================================== -->
+<!-- = Java Sourcecode to HTML automatically converted code = -->
+<!-- =   Java2Html Converter 5.0 [2006-02-26] by Markus Gebhard  markus@jave.de   = -->
+<!-- =     Further information: http://www.java2html.de     = -->
+<div align="left" class="java">
+<table border="0" cellpadding="3" cellspacing="0" bgcolor="#ffffff">
+  <!-- start headline -->
+   <tr>
+    <td colspan="2">
+     <center><font size="+2">
+      <code><b>
+MyRunner.java
+      </b></code>
+     </font></center>
+    </td>
+   </tr>
+  <!-- end headline -->
+   <tr>
+  <!-- start source code -->
+   <td nowrap="nowrap" valign="top" align="left">
+    <code>
+<font color="#3f7f5f">/*</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;JPPF.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;Copyright&nbsp;(C)&nbsp;2005-2014&nbsp;JPPF&nbsp;Team.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;http://www.jppf.org</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;Licensed&nbsp;under&nbsp;the&nbsp;Apache&nbsp;License,&nbsp;Version&nbsp;2.0&nbsp;(the&nbsp;&#34;License&#34;);</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;you&nbsp;may&nbsp;not&nbsp;use&nbsp;this&nbsp;file&nbsp;except&nbsp;in&nbsp;compliance&nbsp;with&nbsp;the&nbsp;License.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;You&nbsp;may&nbsp;obtain&nbsp;a&nbsp;copy&nbsp;of&nbsp;the&nbsp;License&nbsp;at</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;&nbsp;&nbsp;http://www.apache.org/licenses/LICENSE-2.0</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;Unless&nbsp;required&nbsp;by&nbsp;applicable&nbsp;law&nbsp;or&nbsp;agreed&nbsp;to&nbsp;in&nbsp;writing,&nbsp;software</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;distributed&nbsp;under&nbsp;the&nbsp;License&nbsp;is&nbsp;distributed&nbsp;on&nbsp;an&nbsp;&#34;AS&nbsp;IS&#34;&nbsp;BASIS,</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;WITHOUT&nbsp;WARRANTIES&nbsp;OR&nbsp;CONDITIONS&nbsp;OF&nbsp;ANY&nbsp;KIND,&nbsp;either&nbsp;express&nbsp;or&nbsp;implied.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;See&nbsp;the&nbsp;License&nbsp;for&nbsp;the&nbsp;specific&nbsp;language&nbsp;governing&nbsp;permissions&nbsp;and</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;limitations&nbsp;under&nbsp;the&nbsp;License.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*/</font><br />
+<font color="#ffffff"></font><br />
+<font color="#7f0055"><b>package&nbsp;</b></font><font color="#000000">org.jppf.example.extendedclassloading.client;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.util.List;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.client.JPPFClient;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.client.JPPFJob;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.example.extendedclassloading.*;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.node.protocol.Task;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.utils.ExceptionUtils;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.slf4j.Logger;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.slf4j.LoggerFactory;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f7f9f">&lt;p&gt;</font><font color="#3f5fbf">This&nbsp;client&nbsp;application&nbsp;maintains&nbsp;a&nbsp;repository&nbsp;of&nbsp;Java&nbsp;libraries&nbsp;that&nbsp;are&nbsp;automatically</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;downloaded&nbsp;by&nbsp;the&nbsp;nodes.&nbsp;Each&nbsp;node&nbsp;also&nbsp;maintains&nbsp;its&nbsp;own&nbsp;local&nbsp;repository.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;The&nbsp;updates&nbsp;are&nbsp;computed&nbsp;by&nbsp;scanning&nbsp;the&nbsp;folder&nbsp;where&nbsp;the&nbsp;libs&nbsp;are&nbsp;stored,&nbsp;and&nbsp;comparing</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;the&nbsp;scan&nbsp;results&nbsp;with&nbsp;the&nbsp;repository's&nbsp;index&nbsp;file&nbsp;to&nbsp;determine&nbsp;which&nbsp;libraries&nbsp;were&nbsp;added,</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;updated&nbsp;or&nbsp;removed.&nbsp;This&nbsp;information&nbsp;is&nbsp;then&nbsp;communicated&nbsp;to&nbsp;the&nbsp;node&nbsp;via&nbsp;the&nbsp;metadata&nbsp;in</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;a&nbsp;JPPF&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f7f9f">&lt;p&gt;</font><font color="#3f5fbf">This&nbsp;enables&nbsp;the&nbsp;management&nbsp;of&nbsp;the&nbsp;nodes&nbsp;remote&nbsp;repositories&nbsp;by&nbsp;simply&nbsp;removing&nbsp;files&nbsp;from,</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;or&nbsp;dropping&nbsp;files&nbsp;into&nbsp;the&nbsp;folder&nbsp;where&nbsp;the&nbsp;libraries&nbsp;are&nbsp;located.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@author&nbsp;</font><font color="#3f5fbf">Laurent&nbsp;Cohen</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">MyRunner&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Logger&nbsp;for&nbsp;this&nbsp;class.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;static&nbsp;</b></font><font color="#000000">Logger&nbsp;log&nbsp;=&nbsp;LoggerFactory.getLogger</font><font color="#000000">(</font><font color="#000000">MyRunner.</font><font color="#7f0055"><b>class</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;The&nbsp;JPPF&nbsp;client.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;static&nbsp;</b></font><font color="#000000">JPPFClient&nbsp;client&nbsp;=&nbsp;</font><font color="#7f0055"><b>null</b></font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Location&nbsp;where&nbsp;the&nbsp;downloaded&nbsp;libraries&nbsp;are&nbsp;stored&nbsp;on&nbsp;the&nbsp;client's&nbsp;file&nbsp;system.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;static&nbsp;final&nbsp;</b></font><font color="#000000">String&nbsp;CLIENT_LIB_DIR&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;dynamicLibs&#34;</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;A&nbsp;number&nbsp;assigned&nbsp;to&nbsp;each&nbsp;job&nbsp;as&nbsp;part&nbsp;of&nbsp;its&nbsp;name.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;static&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">jobCount&nbsp;=&nbsp;</font><font color="#990000">1</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Entry&nbsp;point&nbsp;for&nbsp;the&nbsp;demo.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">args&nbsp;there&nbsp;can&nbsp;be&nbsp;one&nbsp;optional&nbsp;argument&nbsp;specifying&nbsp;a&nbsp;file&nbsp;pattern&nbsp;as&nbsp;a&nbsp;wildcard-based&nbsp;expression,</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;which&nbsp;will&nbsp;be&nbsp;used&nbsp;as&nbsp;a&nbsp;filter&nbsp;to&nbsp;delete&nbsp;the&nbsp;libraries&nbsp;in&nbsp;the&nbsp;nodes'&nbsp;repositories.&nbsp;Additional&nbsp;arguments&nbsp;are&nbsp;ignored.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;static&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">main</font><font color="#000000">(</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">String</font><font color="#000000">[]&nbsp;</font><font color="#000000">args</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>try&nbsp;</b></font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">client&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">JPPFClient</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;create&nbsp;the&nbsp;classpath&nbsp;specified&nbsp;with&nbsp;the&nbsp;'-c'&nbsp;command-line&nbsp;argument</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">ClassPath&nbsp;classpath&nbsp;=&nbsp;ClassPathHelper.createClassPathFromArguments</font><font color="#000000">(</font><font color="#000000">CLIENT_LIB_DIR,&nbsp;args</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//classpath&nbsp;=&nbsp;ClassPathHelper.createClassPathFromRootFolder(CLIENT_LIB_DIR);</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">((</font><font color="#000000">classpath&nbsp;!=&nbsp;</font><font color="#7f0055"><b>null</b></font><font color="#000000">)&nbsp;</font><font color="#000000">&amp;&amp;&nbsp;</font><font color="#000000">(</font><font color="#000000">classpath.size</font><font color="#000000">()&nbsp;</font><font color="#000000">&gt;&nbsp;</font><font color="#990000">0</font><font color="#000000">))&nbsp;</font><font color="#000000">output</font><font color="#000000">(</font><font color="#2a00ff">&#34;found&nbsp;dynamic&nbsp;libraries:&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;classpath</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>else&nbsp;</b></font><font color="#000000">output</font><font color="#000000">(</font><font color="#2a00ff">&#34;found&nbsp;no&nbsp;dynamic&nbsp;library&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;create&nbsp;the&nbsp;jobs</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;setting&nbsp;a&nbsp;non-null&nbsp;classpath&nbsp;on&nbsp;the&nbsp;first&nbsp;job&nbsp;will&nbsp;cause&nbsp;the&nbsp;node&nbsp;to&nbsp;update&nbsp;the&nbsp;current&nbsp;task&nbsp;class&nbsp;loader</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JPPFJob&nbsp;job1&nbsp;=&nbsp;createJob</font><font color="#000000">(</font><font color="#000000">classpath,&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">MyTask1</font><font color="#000000">())</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;setting&nbsp;a&nbsp;non-null&nbsp;classpath&nbsp;on&nbsp;the&nbsp;second&nbsp;job&nbsp;will&nbsp;cause&nbsp;the&nbsp;node&nbsp;to&nbsp;create&nbsp;a&nbsp;new&nbsp;task&nbsp;class&nbsp;loader</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JPPFJob&nbsp;job2&nbsp;=&nbsp;createJob</font><font color="#000000">(</font><font color="#000000">classpath,&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">MyTask2</font><font color="#000000">())</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;if&nbsp;a&nbsp;file&nbsp;pattern&nbsp;is&nbsp;provided,&nbsp;add&nbsp;a&nbsp;corresponding&nbsp;filter&nbsp;to&nbsp;the&nbsp;metadata&nbsp;of&nbsp;the&nbsp;first&nbsp;job</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">RepositoryFilter&nbsp;filter&nbsp;=&nbsp;ClassPathHelper.getFilterFromArguments</font><font color="#000000">(</font><font color="#000000">args</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">filter&nbsp;!=&nbsp;</font><font color="#7f0055"><b>null</b></font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">job1.getMetadata</font><font color="#000000">()</font><font color="#000000">.setParameter</font><font color="#000000">(</font><font color="#000000">ClassPathHelper.REPOSITORY_DELETE_FILTER,&nbsp;filter</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">output</font><font color="#000000">(</font><font color="#2a00ff">&#34;requesting&nbsp;deletion&nbsp;of&nbsp;files&nbsp;matching&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;filter</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;execute&nbsp;the&nbsp;jobs&nbsp;and&nbsp;process&nbsp;their&nbsp;results</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">executeJob</font><font color="#000000">(</font><font color="#000000">job1</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">executeJob</font><font color="#000000">(</font><font color="#000000">job2</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}&nbsp;</font><font color="#7f0055"><b>catch&nbsp;</b></font><font color="#000000">(</font><font color="#000000">Exception&nbsp;e</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">e.printStackTrace</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}&nbsp;</font><font color="#7f0055"><b>finally&nbsp;</b></font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">client&nbsp;!=&nbsp;</font><font color="#7f0055"><b>null</b></font><font color="#000000">)&nbsp;</font><font color="#000000">client.close</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Create&nbsp;a&nbsp;job&nbsp;with&nbsp;the&nbsp;specified&nbsp;classpath&nbsp;and&nbsp;tasks.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">classpath&nbsp;the&nbsp;classpath&nbsp;to&nbsp;set&nbsp;onto&nbsp;the&nbsp;job's&nbsp;metadata</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">tasks&nbsp;the&nbsp;tasks&nbsp;to&nbsp;add&nbsp;to&nbsp;the&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@return&nbsp;</font><font color="#3f5fbf">the&nbsp;newly&nbsp;created&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@throws&nbsp;</font><font color="#3f5fbf">Exception&nbsp;if&nbsp;any&nbsp;error&nbsp;occurs&nbsp;while&nbsp;creating&nbsp;the&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;static&nbsp;</b></font><font color="#000000">JPPFJob&nbsp;createJob</font><font color="#000000">(</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">ClassPath&nbsp;classpath,&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">Task&lt;?&gt;...tasks</font><font color="#000000">)&nbsp;</font><font color="#7f0055"><b>throws&nbsp;</b></font><font color="#000000">Exception&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JPPFJob&nbsp;job&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">JPPFJob</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">job.setName</font><font color="#000000">(</font><font color="#2a00ff">&#34;Extended&nbsp;Class&nbsp;Loading&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;jobCount++</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;update&nbsp;the&nbsp;job&nbsp;metadata&nbsp;to&nbsp;specifiy&nbsp;which&nbsp;libraries&nbsp;are&nbsp;needed&nbsp;for&nbsp;the&nbsp;job</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">((</font><font color="#000000">classpath&nbsp;!=&nbsp;</font><font color="#7f0055"><b>null</b></font><font color="#000000">)&nbsp;</font><font color="#000000">&amp;&amp;&nbsp;</font><font color="#000000">(</font><font color="#000000">classpath.size</font><font color="#000000">()&nbsp;</font><font color="#000000">&gt;&nbsp;</font><font color="#990000">0</font><font color="#000000">))&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">job.getMetadata</font><font color="#000000">()</font><font color="#000000">.setParameter</font><font color="#000000">(</font><font color="#000000">ClassPathHelper.JOB_CLASSPATH,&nbsp;classpath</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;add&nbsp;the&nbsp;tasks&nbsp;to&nbsp;the&nbsp;job</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">taskNumber&nbsp;=&nbsp;</font><font color="#990000">1</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">String&nbsp;prefix&nbsp;=&nbsp;job.getName</font><font color="#000000">()&nbsp;</font><font color="#000000">+&nbsp;</font><font color="#2a00ff">&#34;:task&nbsp;&#34;</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>for&nbsp;</b></font><font color="#000000">(</font><font color="#000000">Task&lt;?&gt;&nbsp;task:&nbsp;tasks</font><font color="#000000">)&nbsp;</font><font color="#000000">job.add</font><font color="#000000">(</font><font color="#000000">task</font><font color="#000000">)</font><font color="#000000">.setId</font><font color="#000000">(</font><font color="#000000">prefix&nbsp;+&nbsp;taskNumber++</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">job;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Execute&nbsp;the&nbsp;specified&nbsp;job&nbsp;on&nbsp;the&nbsp;grid&nbsp;and&nbsp;process&nbsp;its&nbsp;results.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">job&nbsp;the&nbsp;job&nbsp;to&nbsp;execute</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@throws&nbsp;</font><font color="#3f5fbf">Exception&nbsp;if&nbsp;any&nbsp;error&nbsp;occurs&nbsp;while&nbsp;creating&nbsp;the&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;static&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">executeJob</font><font color="#000000">(</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">JPPFJob&nbsp;job</font><font color="#000000">)&nbsp;</font><font color="#7f0055"><b>throws&nbsp;</b></font><font color="#000000">Exception&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;submit&nbsp;the&nbsp;job&nbsp;to&nbsp;the&nbsp;grid</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">List&lt;Task&lt;?&gt;&gt;&nbsp;results&nbsp;=&nbsp;client.submitJob</font><font color="#000000">(</font><font color="#000000">job</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;process&nbsp;the&nbsp;results</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">output</font><font color="#000000">(</font><font color="#2a00ff">&#34;***&nbsp;results&nbsp;for&nbsp;job&nbsp;'&#34;&nbsp;</font><font color="#000000">+&nbsp;job.getName</font><font color="#000000">()&nbsp;</font><font color="#000000">+&nbsp;</font><font color="#2a00ff">&#34;'&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>for&nbsp;</b></font><font color="#000000">(</font><font color="#000000">Task&lt;?&gt;&nbsp;task:&nbsp;results</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">String&nbsp;prefix&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;task&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;task.getId</font><font color="#000000">()&nbsp;</font><font color="#000000">+&nbsp;</font><font color="#2a00ff">&#34;&nbsp;&#34;</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">task.getThrowable</font><font color="#000000">()&nbsp;</font><font color="#000000">!=&nbsp;</font><font color="#7f0055"><b>null</b></font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;if&nbsp;an&nbsp;error&nbsp;occurred,&nbsp;show&nbsp;the&nbsp;exception&nbsp;stack&nbsp;trace</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">output</font><font color="#000000">(</font><font color="#000000">prefix&nbsp;+&nbsp;</font><font color="#2a00ff">&#34;got&nbsp;exception:&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;ExceptionUtils.getStackTrace</font><font color="#000000">(</font><font color="#000000">task.getThrowable</font><font color="#000000">()))</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}&nbsp;</font><font color="#7f0055"><b>else&nbsp;</b></font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;otherwise&nbsp;show&nbsp;the&nbsp;task&nbsp;result</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">output</font><font color="#000000">(</font><font color="#000000">prefix&nbsp;+&nbsp;</font><font color="#2a00ff">&#34;result:&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;task.getResult</font><font color="#000000">())</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Print&nbsp;a&nbsp;message&nbsp;to&nbsp;the&nbsp;console&nbsp;and/or&nbsp;log&nbsp;file.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">message&nbsp;the&nbsp;message&nbsp;to&nbsp;print.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;static&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">output</font><font color="#000000">(</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">String&nbsp;message</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;comment&nbsp;out&nbsp;this&nbsp;line&nbsp;to&nbsp;remove&nbsp;messages&nbsp;from&nbsp;the&nbsp;console</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">System.out.println</font><font color="#000000">(</font><font color="#000000">message</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;comment&nbsp;out&nbsp;this&nbsp;line&nbsp;to&nbsp;remove&nbsp;messages&nbsp;from&nbsp;the&nbsp;log&nbsp;file</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">log.info</font><font color="#000000">(</font><font color="#000000">message</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#000000">}</font></code>
+    
+   </td>
+  <!-- end source code -->
+   </tr>
+</table>
+</div>
+<!-- =       END of automatically generated HTML code       = -->
+<!-- ======================================================== -->
+
+
+</body></html>

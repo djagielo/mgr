@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head>
+<title></title>
+  <style type="text/css">
+    <!--code { font-family: Courier New, Courier; font-size: 10pt; margin: 0px; }-->
+  </style>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+</head><body>
+
+
+<!-- ======================================================== -->
+<!-- = Java Sourcecode to HTML automatically converted code = -->
+<!-- =   Java2Html Converter 5.0 [2006-02-26] by Markus Gebhard  markus@jave.de   = -->
+<!-- =     Further information: http://www.java2html.de     = -->
+<div align="left" class="java">
+<table border="0" cellpadding="3" cellspacing="0" bgcolor="#ffffff">
+  <!-- start headline -->
+   <tr>
+    <td colspan="2">
+     <center><font size="+2">
+      <code><b>
+CustomLoadBalancerRunner.java
+      </b></code>
+     </font></center>
+    </td>
+   </tr>
+  <!-- end headline -->
+   <tr>
+  <!-- start source code -->
+   <td nowrap="nowrap" valign="top" align="left">
+    <code>
+<font color="#3f7f5f">/*</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;JPPF.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;Copyright&nbsp;(C)&nbsp;2005-2014&nbsp;JPPF&nbsp;Team.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;http://www.jppf.org</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;Licensed&nbsp;under&nbsp;the&nbsp;Apache&nbsp;License,&nbsp;Version&nbsp;2.0&nbsp;(the&nbsp;&#34;License&#34;);</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;you&nbsp;may&nbsp;not&nbsp;use&nbsp;this&nbsp;file&nbsp;except&nbsp;in&nbsp;compliance&nbsp;with&nbsp;the&nbsp;License.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;You&nbsp;may&nbsp;obtain&nbsp;a&nbsp;copy&nbsp;of&nbsp;the&nbsp;License&nbsp;at</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;&nbsp;&nbsp;http://www.apache.org/licenses/LICENSE-2.0</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;Unless&nbsp;required&nbsp;by&nbsp;applicable&nbsp;law&nbsp;or&nbsp;agreed&nbsp;to&nbsp;in&nbsp;writing,&nbsp;software</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;distributed&nbsp;under&nbsp;the&nbsp;License&nbsp;is&nbsp;distributed&nbsp;on&nbsp;an&nbsp;&#34;AS&nbsp;IS&#34;&nbsp;BASIS,</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;WITHOUT&nbsp;WARRANTIES&nbsp;OR&nbsp;CONDITIONS&nbsp;OF&nbsp;ANY&nbsp;KIND,&nbsp;either&nbsp;express&nbsp;or&nbsp;implied.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;See&nbsp;the&nbsp;License&nbsp;for&nbsp;the&nbsp;specific&nbsp;language&nbsp;governing&nbsp;permissions&nbsp;and</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*&nbsp;limitations&nbsp;under&nbsp;the&nbsp;License.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f7f5f">*/</font><br />
+<font color="#7f0055"><b>package&nbsp;</b></font><font color="#000000">org.jppf.example.loadbalancer.client;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.PrintWriter;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.StringWriter;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.util.List;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.client.*;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.example.loadbalancer.common.MyCustomPolicy;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.node.policy.AtLeast;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.node.policy.ExecutionPolicy;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.node.protocol.Task;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.jppf.server.protocol.JPPFJobMetadata;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;This&nbsp;is&nbsp;a&nbsp;fully&nbsp;commented&nbsp;job&nbsp;runner&nbsp;for&nbsp;the&nbsp;Custom&nbsp;Load&nbsp;Balancer&nbsp;sample.</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@author&nbsp;</font><font color="#3f5fbf">Laurent&nbsp;Cohen</font><br />
+<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">CustomLoadBalancerRunner</font><br />
+<font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;The&nbsp;JPPF&nbsp;client,&nbsp;handles&nbsp;all&nbsp;communications&nbsp;with&nbsp;the&nbsp;server.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;It&nbsp;is&nbsp;recommended&nbsp;to&nbsp;only&nbsp;use&nbsp;one&nbsp;JPPF&nbsp;client&nbsp;per&nbsp;JVM,&nbsp;so&nbsp;it</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;should&nbsp;generally&nbsp;be&nbsp;created&nbsp;and&nbsp;used&nbsp;as&nbsp;a&nbsp;singleton.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;static&nbsp;</b></font><font color="#000000">JPPFClient&nbsp;jppfClient&nbsp;=&nbsp;&nbsp;</font><font color="#7f0055"><b>null</b></font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Value&nbsp;representing&nbsp;one&nbsp;kilobyte.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;static&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">KB&nbsp;=&nbsp;</font><font color="#990000">1024</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Value&nbsp;representing&nbsp;one&nbsp;megabyte.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;static&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">MB&nbsp;=&nbsp;</font><font color="#990000">1024&nbsp;</font><font color="#000000">*&nbsp;KB;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;The&nbsp;entry&nbsp;point&nbsp;for&nbsp;this&nbsp;application&nbsp;runner&nbsp;to&nbsp;be&nbsp;run&nbsp;from&nbsp;a&nbsp;Java&nbsp;command&nbsp;line.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">args&nbsp;by&nbsp;default,&nbsp;we&nbsp;do&nbsp;not&nbsp;use&nbsp;the&nbsp;command&nbsp;line&nbsp;arguments,</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;however&nbsp;nothing&nbsp;prevents&nbsp;us&nbsp;from&nbsp;using&nbsp;them&nbsp;if&nbsp;need&nbsp;be.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;static&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">main</font><font color="#000000">(</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">String...args</font><font color="#000000">)</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>try</b></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;create&nbsp;the&nbsp;JPPFClient.&nbsp;This&nbsp;constructor&nbsp;call&nbsp;causes&nbsp;JPPF&nbsp;to&nbsp;read&nbsp;the&nbsp;configuration&nbsp;file</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;and&nbsp;connect&nbsp;with&nbsp;one&nbsp;or&nbsp;multiple&nbsp;JPPF&nbsp;drivers.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">jppfClient&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">JPPFClient</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;create&nbsp;a&nbsp;runner&nbsp;instance.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">CustomLoadBalancerRunner&nbsp;runner&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">CustomLoadBalancerRunner</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Create&nbsp;a&nbsp;&#34;heavy&#34;&nbsp;job</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;The&nbsp;is&nbsp;the&nbsp;maximum&nbsp;memory&nbsp;footprint&nbsp;of&nbsp;a&nbsp;task&nbsp;in&nbsp;the&nbsp;job</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">taskFootprint&nbsp;=&nbsp;</font><font color="#990000">20&nbsp;</font><font color="#000000">*&nbsp;MB;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;We&nbsp;want&nbsp;40&nbsp;MB&nbsp;available&nbsp;for&nbsp;each&nbsp;heavy&nbsp;task&nbsp;running&nbsp;concurrently.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;This&nbsp;is&nbsp;not&nbsp;easily&nbsp;doable&nbsp;with&nbsp;a&nbsp;standard&nbsp;execution&nbsp;policy,&nbsp;so&nbsp;we&nbsp;create&nbsp;a&nbsp;custom&nbsp;one.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;We&nbsp;use&nbsp;double&nbsp;the&nbsp;task&nbsp;footprint&nbsp;because&nbsp;it&nbsp;will&nbsp;take&nbsp;approximately&nbsp;twice&nbsp;the&nbsp;memory&nbsp;footprint</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;when&nbsp;each&nbsp;task&nbsp;is&nbsp;serialized&nbsp;or&nbsp;deserialized&nbsp;in&nbsp;the&nbsp;node&nbsp;(serialized&nbsp;data&nbsp;+&nbsp;the&nbsp;object&nbsp;itself).</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">ExecutionPolicy&nbsp;heavyPolicy&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">MyCustomPolicy</font><font color="#000000">(</font><font color="#2a00ff">&#34;&#34;&nbsp;</font><font color="#000000">+&nbsp;</font><font color="#000000">(</font><font color="#990000">2</font><font color="#000000">*taskFootprint</font><font color="#000000">))</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Tasks&nbsp;in&nbsp;the&nbsp;job&nbsp;will&nbsp;have&nbsp;20&nbsp;MB&nbsp;data&nbsp;size,&nbsp;will&nbsp;last&nbsp;at&nbsp;most&nbsp;5&nbsp;seconds,</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;and&nbsp;the&nbsp;maximum&nbsp;execution&nbsp;time&nbsp;for&nbsp;a&nbsp;set&nbsp;of&nbsp;tasks&nbsp;will&nbsp;be&nbsp;no&nbsp;more&nbsp;than&nbsp;60&nbsp;seconds.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;With&nbsp;4&nbsp;tasks&nbsp;and&nbsp;the&nbsp;node's&nbsp;heap&nbsp;set&nbsp;to&nbsp;64&nbsp;MB,&nbsp;the&nbsp;load-balancer&nbsp;will&nbsp;be&nbsp;forced&nbsp;to&nbsp;split&nbsp;the&nbsp;job&nbsp;in&nbsp;2&nbsp;at&nbsp;least.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JPPFJob&nbsp;heavyJob&nbsp;=&nbsp;runner.createJob</font><font color="#000000">(</font><font color="#2a00ff">&#34;Heavy&nbsp;Job&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">4</font><font color="#000000">,&nbsp;taskFootprint,&nbsp;</font><font color="#990000">5L</font><font color="#000000">*</font><font color="#990000">1000L</font><font color="#000000">,&nbsp;</font><font color="#990000">60L</font><font color="#000000">*</font><font color="#990000">1000L</font><font color="#000000">,&nbsp;heavyPolicy</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;This&nbsp;job&nbsp;has&nbsp;long-running&nbsp;tasks,&nbsp;so&nbsp;we&nbsp;can&nbsp;submit&nbsp;it&nbsp;and&nbsp;create&nbsp;the&nbsp;second&nbsp;job&nbsp;while&nbsp;it&nbsp;is&nbsp;executing.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">jppfClient.submitJob</font><font color="#000000">(</font><font color="#000000">heavyJob</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Create&nbsp;a&nbsp;&#34;light&#34;&nbsp;job</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;We&nbsp;want&nbsp;at&nbsp;least&nbsp;2&nbsp;light&nbsp;tasks&nbsp;executing&nbsp;concurrently&nbsp;in&nbsp;a&nbsp;node,&nbsp;to&nbsp;mitigate&nbsp;the&nbsp;network&nbsp;overhead.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">ExecutionPolicy&nbsp;lightPolicy&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">AtLeast</font><font color="#000000">(</font><font color="#2a00ff">&#34;jppf.processing.threads&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">2</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Tasks&nbsp;in&nbsp;the&nbsp;job&nbsp;will&nbsp;have&nbsp;10&nbsp;KB&nbsp;data&nbsp;size,&nbsp;will&nbsp;last&nbsp;at&nbsp;most&nbsp;80&nbsp;milliseconds,</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;and&nbsp;the&nbsp;maximum&nbsp;execution&nbsp;time&nbsp;for&nbsp;a&nbsp;set&nbsp;of&nbsp;tasks&nbsp;will&nbsp;be&nbsp;no&nbsp;more&nbsp;than&nbsp;3&nbsp;seconds.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Here&nbsp;the&nbsp;allowed&nbsp;time&nbsp;will&nbsp;be&nbsp;the&nbsp;limiting&nbsp;factor&nbsp;for&nbsp;the&nbsp;number&nbsp;of&nbsp;tasks&nbsp;that&nbsp;can&nbsp;be&nbsp;sent&nbsp;to&nbsp;a&nbsp;node,</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;so&nbsp;the&nbsp;if&nbsp;the&nbsp;node&nbsp;has&nbsp;4&nbsp;threads,&nbsp;the&nbsp;job&nbsp;should&nbsp;be&nbsp;split&nbsp;in&nbsp;2:&nbsp;one&nbsp;set&nbsp;of&nbsp;150&nbsp;tasks,&nbsp;then&nbsp;one&nbsp;set&nbsp;of&nbsp;50&nbsp;(approximately).</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;(total&nbsp;time&nbsp;=&nbsp;200&nbsp;*&nbsp;80&nbsp;/&nbsp;4)</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JPPFJob&nbsp;lightJob&nbsp;=&nbsp;runner.createJob</font><font color="#000000">(</font><font color="#2a00ff">&#34;Light&nbsp;Job&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">200</font><font color="#000000">,&nbsp;</font><font color="#990000">10</font><font color="#000000">*KB,&nbsp;</font><font color="#990000">80L</font><font color="#000000">,&nbsp;</font><font color="#990000">3L</font><font color="#000000">*</font><font color="#990000">1000L</font><font color="#000000">,&nbsp;lightPolicy</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Submit&nbsp;the&nbsp;light&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">jppfClient.submitJob</font><font color="#000000">(</font><font color="#000000">lightJob</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;now&nbsp;we&nbsp;obtain&nbsp;and&nbsp;process&nbsp;the&nbsp;results&nbsp;-&nbsp;this&nbsp;will&nbsp;cause&nbsp;a&nbsp;lot&nbsp;of&nbsp;logging&nbsp;to&nbsp;the&nbsp;console!</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">runner.processJobResults</font><font color="#000000">(</font><font color="#000000">heavyJob</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">runner.processJobResults</font><font color="#000000">(</font><font color="#000000">lightJob</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>catch</b></font><font color="#000000">(</font><font color="#000000">Exception&nbsp;e</font><font color="#000000">)</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">e.printStackTrace</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>finally</b></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">jppfClient&nbsp;!=&nbsp;</font><font color="#7f0055"><b>null</b></font><font color="#000000">)&nbsp;</font><font color="#000000">jppfClient.close</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Create&nbsp;a&nbsp;JPPF&nbsp;job&nbsp;that&nbsp;can&nbsp;be&nbsp;submitted&nbsp;for&nbsp;execution.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">jobName&nbsp;the&nbsp;name&nbsp;(or&nbsp;id)&nbsp;assigned&nbsp;to&nbsp;the&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">nbTasks&nbsp;the&nbsp;number&nbsp;of&nbsp;tasks&nbsp;to&nbsp;add&nbsp;to&nbsp;the&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">size&nbsp;the&nbsp;data&nbsp;size&nbsp;of&nbsp;each&nbsp;task,&nbsp;in&nbsp;bytes.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">duration&nbsp;the&nbsp;duration&nbsp;of&nbsp;each&nbsp;tasks,&nbsp;in&nbsp;milliseconds.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">allowedTime&nbsp;the&nbsp;maximum&nbsp;execution&nbsp;time&nbsp;for&nbsp;a&nbsp;set&nbsp;of&nbsp;tasks&nbsp;on&nbsp;a&nbsp;node.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">policy&nbsp;execution&nbsp;policy&nbsp;assigned&nbsp;to&nbsp;the&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@return&nbsp;</font><font color="#3f5fbf">an&nbsp;instance&nbsp;of&nbsp;the&nbsp;</font><font color="#3f3fbf">{@link&nbsp;JPPFJob}&nbsp;</font><font color="#3f5fbf">class.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@throws&nbsp;</font><font color="#3f5fbf">Exception&nbsp;if&nbsp;an&nbsp;error&nbsp;occurs&nbsp;while&nbsp;creating&nbsp;the&nbsp;job&nbsp;or&nbsp;adding&nbsp;tasks.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">JPPFJob&nbsp;createJob</font><font color="#000000">(</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">String&nbsp;jobName,&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">nbTasks,&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">size,&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>long&nbsp;</b></font><font color="#000000">duration,</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>long&nbsp;</b></font><font color="#000000">allowedTime,&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">ExecutionPolicy&nbsp;policy</font><font color="#000000">)&nbsp;</font><font color="#7f0055"><b>throws&nbsp;</b></font><font color="#000000">Exception</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Create&nbsp;a&nbsp;JPPF&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JPPFJob&nbsp;job&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">JPPFJob</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Give&nbsp;this&nbsp;job&nbsp;a&nbsp;readable&nbsp;unique&nbsp;id&nbsp;that&nbsp;we&nbsp;can&nbsp;use&nbsp;to&nbsp;monitor&nbsp;and&nbsp;manage&nbsp;it.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">job.setName</font><font color="#000000">(</font><font color="#000000">jobName</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Specify&nbsp;the&nbsp;job&nbsp;metadata.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JPPFJobMetadata&nbsp;metadata&nbsp;=&nbsp;</font><font color="#000000">(</font><font color="#000000">JPPFJobMetadata</font><font color="#000000">)&nbsp;</font><font color="#000000">job.getMetadata</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">metadata.setParameter</font><font color="#000000">(</font><font color="#2a00ff">&#34;task.memory&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;&#34;&nbsp;</font><font color="#000000">+&nbsp;size</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">metadata.setParameter</font><font color="#000000">(</font><font color="#2a00ff">&#34;task.time&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;&#34;&nbsp;</font><font color="#000000">+&nbsp;duration</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">metadata.setParameter</font><font color="#000000">(</font><font color="#2a00ff">&#34;allowed.time&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;&#34;&nbsp;</font><font color="#000000">+&nbsp;allowedTime</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">metadata.setParameter</font><font color="#000000">(</font><font color="#2a00ff">&#34;id&#34;</font><font color="#000000">,&nbsp;jobName</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Add&nbsp;the&nbsp;tasks&nbsp;to&nbsp;the&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>for&nbsp;</b></font><font color="#000000">(</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">i=</font><font color="#990000">1</font><font color="#000000">;&nbsp;i&lt;=nbTasks;&nbsp;i++</font><font color="#000000">)</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;create&nbsp;a&nbsp;task&nbsp;with&nbsp;the&nbsp;specified&nbsp;data&nbsp;size&nbsp;and&nbsp;duration</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">Task&lt;Object&gt;&nbsp;task&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">CustomLoadBalancerTask</font><font color="#000000">(</font><font color="#000000">size,&nbsp;duration</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;task&nbsp;id&nbsp;contains&nbsp;the&nbsp;job&nbsp;name&nbsp;for&nbsp;easier&nbsp;identification</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">task.setId</font><font color="#000000">(</font><font color="#000000">jobName&nbsp;+&nbsp;</font><font color="#2a00ff">&#34;&nbsp;-&nbsp;task&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;i</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">job.add</font><font color="#000000">(</font><font color="#000000">task</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Assign&nbsp;an&nbsp;execution&nbsp;policy&nbsp;to&nbsp;the&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">job.getSLA</font><font color="#000000">()</font><font color="#000000">.setExecutionPolicy</font><font color="#000000">(</font><font color="#000000">policy</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Set&nbsp;the&nbsp;job&nbsp;in&nbsp;non-blocking&nbsp;(asynchronous)&nbsp;mode.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">job.setBlocking</font><font color="#000000">(</font><font color="#7f0055"><b>false</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">job;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Collect&nbsp;and&nbsp;process&nbsp;the&nbsp;execution&nbsp;results&nbsp;of&nbsp;a&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@param&nbsp;</font><font color="#3f5fbf">job&nbsp;the&nbsp;JPPF&nbsp;job&nbsp;to&nbsp;process.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@throws&nbsp;</font><font color="#3f5fbf">Exception&nbsp;if&nbsp;an&nbsp;error&nbsp;occurs&nbsp;while&nbsp;processing&nbsp;the&nbsp;results.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">processJobResults</font><font color="#000000">(</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">JPPFJob&nbsp;job</font><font color="#000000">)&nbsp;</font><font color="#7f0055"><b>throws&nbsp;</b></font><font color="#000000">Exception</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Print&nbsp;a&nbsp;banner&nbsp;to&nbsp;visually&nbsp;separate&nbsp;the&nbsp;results&nbsp;for&nbsp;each&nbsp;job.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">System.out.println</font><font color="#000000">(</font><font color="#2a00ff">&#34;\n**********&nbsp;Results&nbsp;for&nbsp;job&nbsp;:&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;job.getName</font><font color="#000000">()&nbsp;</font><font color="#000000">+&nbsp;</font><font color="#2a00ff">&#34;&nbsp;**********\n&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;We&nbsp;are&nbsp;now&nbsp;ready&nbsp;to&nbsp;get&nbsp;the&nbsp;results&nbsp;of&nbsp;the&nbsp;job&nbsp;execution.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;We&nbsp;use&nbsp;JPPFJob.awaitResults()&nbsp;for&nbsp;this.&nbsp;This&nbsp;method&nbsp;returns&nbsp;immediately&nbsp;with&nbsp;the</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;results&nbsp;if&nbsp;the&nbsp;job&nbsp;has&nbsp;completed,&nbsp;otherwise&nbsp;it&nbsp;waits&nbsp;until&nbsp;the&nbsp;job&nbsp;execution&nbsp;is&nbsp;complete.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">List&lt;Task&lt;?&gt;&gt;&nbsp;results&nbsp;=&nbsp;job.awaitResults</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Process&nbsp;the&nbsp;results</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>for&nbsp;</b></font><font color="#000000">(</font><font color="#000000">Task&lt;?&gt;&nbsp;task:&nbsp;results</font><font color="#000000">)</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;If&nbsp;the&nbsp;task&nbsp;execution&nbsp;resulted&nbsp;in&nbsp;an&nbsp;exception,&nbsp;display&nbsp;the&nbsp;stack&nbsp;trace.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">task.getThrowable</font><font color="#000000">()&nbsp;</font><font color="#000000">!=&nbsp;</font><font color="#7f0055"><b>null</b></font><font color="#000000">)</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;process&nbsp;the&nbsp;exception&nbsp;here&nbsp;...</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">StringWriter&nbsp;sw&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">StringWriter</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">task.getThrowable</font><font color="#000000">()</font><font color="#000000">.printStackTrace</font><font color="#000000">(</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">PrintWriter</font><font color="#000000">(</font><font color="#000000">sw</font><font color="#000000">))</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">System.out.println</font><font color="#000000">(</font><font color="#2a00ff">&#34;Exception&nbsp;occurred&nbsp;while&nbsp;executing&nbsp;task&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;task.getId</font><font color="#000000">()&nbsp;</font><font color="#000000">+&nbsp;</font><font color="#2a00ff">&#34;:&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">System.out.println</font><font color="#000000">(</font><font color="#000000">sw.toString</font><font color="#000000">())</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>else</b></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Display&nbsp;the&nbsp;task&nbsp;result.</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">System.out.println</font><font color="#000000">(</font><font color="#2a00ff">&#34;Result&nbsp;for&nbsp;task&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;task.getId</font><font color="#000000">()&nbsp;</font><font color="#000000">+&nbsp;</font><font color="#2a00ff">&#34;&nbsp;:&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;task.getResult</font><font color="#000000">())</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#000000">}</font></code>
+    
+   </td>
+  <!-- end source code -->
+   </tr>
+</table>
+</div>
+<!-- =       END of automatically generated HTML code       = -->
+<!-- ======================================================== -->
+
+
+</body></html>

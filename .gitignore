@@ -1,3 +1,8 @@
 /bin
 /CommonUtils/bin/pl/polsl/utils/hashes/*.class
 /JppfTestsMgr/bin/pl/polsl/hashes/*.class
+/example projects/JPPF-4.2-samples-pack/AdaptiveGrid/classes/org/jppf/example/adaptivegrid/*.class
+/example projects/JPPF-4.2-samples-pack/CustomLoadBalancer/classes/org/jppf/example/loadbalancer/client/*.class
+/example projects/JPPF-4.2-samples-pack/WordCount/classes-client/org/jppf/example/wordcount/*.class
+/example projects/JPPF-4.2-samples-pack/ConcurrentJobs/classes/org/jppf/example/concurrentjobs/*.class
+*.class
