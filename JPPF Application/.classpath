@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="classes" path="src"/>
-	<classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
-	<classpathentry kind="con" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/config"/>
-	<classpathentry kind="con" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/classes"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/lib/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/lib/jppf-client.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/lib/jppf-common-node.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/lib/jppf-common.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/lib/jppf-jmxremote_optional-1.0.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/lib/slf4j-api-1.6.1.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/example projects/JPPF-4.1.3-application-template/lib/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

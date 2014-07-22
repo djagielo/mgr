@@ -6,14 +6,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/lib/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/lib/jppf-client.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/lib/jppf-common.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/lib/jppf-common-node.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/lib/jppf-jmxremote_optional-1.0.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/lib/slf4j-api-1.6.1.jar"/>
-	<classpathentry kind="lib" path="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/lib/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/CommonUtils"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
 		<attributes>
