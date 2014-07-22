@@ -31,6 +31,8 @@ public class NewCentroidsMerger extends AbstractMerger<Map<Integer, RealVector>>
 							Pair<Integer, RealVector> pair = t.getResult();
 							getMergedResults().put(pair.getLeft(), pair.getRight());
 						}
+						
+						mergedTasksCounter.addAndGet(1);
 					}
 				}
 			}

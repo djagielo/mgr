@@ -32,7 +32,6 @@ public class JppfKMeansTest {
 		    	JobProvider jobProvider = new JobProvider();
 		    	JPPFJob allocateJob = jobProvider.createClosestCentroidsJob(data, centroids);
 		    	// submit job to compute on grid
-		    	System.out.println("Submit job1");
 		    	client.submitJob(allocateJob);
 		    	
 		    	// waiting for all jobs gets done

@@ -23,55 +23,13 @@ public class ClosestCentroidMerger extends AbstractMerger<Map<Integer, List<Real
 		super(mergedTaskCounter);
 	}
 
-	private class Merger implements Runnable{
-	    private final List<Task<?>> tasks;
-
-	    /**
-	     * Initialize with the specified set of tasks.
-	     * @param tasks the tasks to process.
-	     */
-	    public Merger(final List<Task<?>> tasks) {
-	      this.tasks = tasks;
-	    }
-
-		@Override
-		public void run() {
-			if(tasks != null){
-				for(Task<?> task: tasks){
-					if(task instanceof ClosestCentroidAllocationTask){
-						ClosestCentroidAllocationTask t = (ClosestCentroidAllocationTask) task;
-						Pair<Integer, RealVector> pair = t.getResult();
-						
-						if(mergedResults.containsKey(pair.getLeft())){
-							List<RealVector> results = mergedResults.get(pair.getLeft());
-							results.add(pair.getRight());
-							mergedResults.put(pair.getLeft(), results);
-		
-						}
-						else{
-							List<RealVector> values = new LinkedList<RealVector>();
-							values.add(pair.getRight());
-							mergedResults.put(pair.getLeft(), values);
-						}
-					}
-					else if(task instanceof NewCentroidsTask){
-						NewCentroidsTask t = (NewCentroidsTask)task;
-						Pair<Integer, RealVector> pair = t.getResult();
-						mergedResults.put(pair.getLeft(), Collections.singletonList(pair.getRight()));
-					}
-					
-					mergedTasksCounter.addAndGet(1);
-				}
-			}
-		}
-	}
-
 	@Override
 	public Runnable getMerger(final List<Task<?>> tasks) {
 		Runnable result = new Runnable() {
 			
 			@Override
 			public void run() {
+				System.out.println("*** MERGER ***");
 				if(tasks != null){
 					for(Task<?> task: tasks){
 						if(task instanceof ClosestCentroidAllocationTask){
@@ -90,11 +48,12 @@ public class ClosestCentroidMerger extends AbstractMerger<Map<Integer, List<Real
 								getMergedResults().put(pair.getLeft(), values);
 							}
 						}
+						
+						mergedTasksCounter.addAndGet(1);
 					}
 				}
 			}
 		};
-		
 		
 		return result;
 	}
