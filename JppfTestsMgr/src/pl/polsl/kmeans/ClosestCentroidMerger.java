@@ -29,7 +29,7 @@ public class ClosestCentroidMerger extends AbstractMerger<Map<Integer, List<Real
 			
 			@Override
 			public void run() {
-				System.out.println("*** MERGER ***");
+				//System.out.println("*** MERGER ***");
 				if(tasks != null){
 					for(Task<?> task: tasks){
 						if(task instanceof ClosestCentroidAllocationTask){

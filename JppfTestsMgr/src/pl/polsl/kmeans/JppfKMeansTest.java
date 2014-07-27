@@ -25,14 +25,17 @@ public class JppfKMeansTest {
 		    List<RealVector> data = KMeansHelper.readDataFromFile(path, SPLIT_MARK);
 		    // pobranie próbki K punktów z kolekcji
 		    final List<RealVector> centroids = KMeansHelper.takeSample(data, K);
-		
+		    SubmitQueue queue = new SubmitQueue(40, client);
+		    long start = System.currentTimeMillis();
 		    double tempDist;
 		    do{
 		    	// 1. allocate each vector to closest centroid and group by id
 		    	JobProvider jobProvider = new JobProvider();
-		    	JPPFJob allocateJob = jobProvider.createClosestCentroidsJob(data, centroids);
+		    	List<JPPFJob> allocateJobs = jobProvider.createClosestCentroidsJobs(data, centroids,100);
 		    	// submit job to compute on grid
-		    	client.submitJob(allocateJob);
+		    	//client.submitJob(allocateJob);
+		    	for(JPPFJob job: allocateJobs)
+		    		queue.submit(job);
 		    	
 		    	// waiting for all jobs gets done
 		    	Object lock = new Object();
@@ -44,9 +47,10 @@ public class JppfKMeansTest {
 		        }
 		        
 		    	// 2. average the vectors within each cluster to compute centroids
-		    	
-		        JPPFJob groupByJob = jobProvider.createGroupByAndAverageJob(KMeansHelper.toListOfPairs(jobProvider.getClosestCentroidsMerger().getMergedResults().entrySet()));
-		        client.submitJob(groupByJob);
+		        List<JPPFJob> groupByJobs = jobProvider.createGroupByAndAverageJobs(KMeansHelper.toListOfPairs(jobProvider.getClosestCentroidsMerger().getMergedResults().entrySet()),10);
+		        //client.submitJob(groupByJob);
+		        for(JPPFJob job: groupByJobs)
+		        	queue.submit(job);
 		        
 		     // waiting for all jobs gets done
 		    	Object lock2 = new Object();
@@ -73,6 +77,7 @@ public class JppfKMeansTest {
 		        System.out.println("Finished iteration (delta = " + tempDist + ")");
 		    	
 		    }while(tempDist > convergeDist);
+		    System.out.println(String.format("Algorithm finished in %s[ms]", (System.currentTimeMillis() - start)));
 		
 		}
 

@@ -6,21 +6,23 @@
         <jar destfile="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/dist/HashTest.jar">
             <manifest>
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="pl.polsl.hashes.HashTest"/>
+                <attribute name="Rsrc-Main-Class" value="pl.polsl.hashes.JppfHashTest"/>
                 <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./ commons-io-2.4.jar jppf-client.jar jppf-common.jar jppf-common-node.jar jppf-jmxremote_optional-1.0.jar log4j-1.2.15.jar slf4j-api-1.6.1.jar slf4j-log4j12-1.6.1.jar"/>
+                <attribute name="Rsrc-Class-Path" value="./ commons-math3-3.3.jar commons-lang3-3.3.2.jar log4j-1.2.17.jar jppf-client-4.2.jar jppf-common-4.2.jar jppf-common-node-4.2.jar commons-io-2.4.jar jppf-jmxremote_optional-1.1.jar slf4j-api-1.7.7.jar slf4j-log4j12-1.7.7.jar"/>
             </manifest>
             <zipfileset src="jar-in-jar-loader.zip"/>
-            <fileset dir="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/bin"/>
-            <zipfileset dir="X:\Politechnika\Magisterka\praca magisterka\repozytorium\JppfTestsMgr\lib" includes="commons-io-2.4.jar"/>
-            <zipfileset dir="X:\Politechnika\Magisterka\praca magisterka\repozytorium\JppfTestsMgr\lib" includes="jppf-client.jar"/>
-            <zipfileset dir="X:\Politechnika\Magisterka\praca magisterka\repozytorium\JppfTestsMgr\lib" includes="jppf-common.jar"/>
-            <zipfileset dir="X:\Politechnika\Magisterka\praca magisterka\repozytorium\JppfTestsMgr\lib" includes="jppf-common-node.jar"/>
-            <zipfileset dir="X:\Politechnika\Magisterka\praca magisterka\repozytorium\JppfTestsMgr\lib" includes="jppf-jmxremote_optional-1.0.jar"/>
-            <zipfileset dir="X:\Politechnika\Magisterka\praca magisterka\repozytorium\JppfTestsMgr\lib" includes="log4j-1.2.15.jar"/>
-            <zipfileset dir="X:\Politechnika\Magisterka\praca magisterka\repozytorium\JppfTestsMgr\lib" includes="slf4j-api-1.6.1.jar"/>
-            <zipfileset dir="X:\Politechnika\Magisterka\praca magisterka\repozytorium\JppfTestsMgr\lib" includes="slf4j-log4j12-1.6.1.jar"/>
-            <fileset dir="X:/Politechnika/Magisterka/praca magisterka/repozytorium/CommonUtils/bin"/>
+            <fileset dir="X:/Politechnika/Magisterka/praca magisterka/repozytorium/JppfTestsMgr/target/classes"/>
+            <fileset dir="X:/Politechnika/Magisterka/praca magisterka/repozytorium/CommonUtils/target/classes"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\org\apache\commons\commons-math3\3.3" includes="commons-math3-3.3.jar"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\org\apache\commons\commons-lang3\3.3.2" includes="commons-lang3-3.3.2.jar"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\log4j\log4j\1.2.17" includes="log4j-1.2.17.jar"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\org\jppf\jppf-client\4.2" includes="jppf-client-4.2.jar"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\org\jppf\jppf-common\4.2" includes="jppf-common-4.2.jar"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\org\jppf\jppf-common-node\4.2" includes="jppf-common-node-4.2.jar"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\commons-io\commons-io\2.4" includes="commons-io-2.4.jar"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\org\jppf\jppf-jmxremote_optional\1.1" includes="jppf-jmxremote_optional-1.1.jar"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\org\slf4j\slf4j-api\1.7.7" includes="slf4j-api-1.7.7.jar"/>
+            <zipfileset dir="C:\Users\dariu_000\.m2\repository\org\slf4j\slf4j-log4j12\1.7.7" includes="slf4j-log4j12-1.7.7.jar"/>
         </jar>
     </target>
 </project>

@@ -39,7 +39,7 @@ public class GridGainKmeansTest {
 		    List<RealVector> data = KMeansHelper.readDataFromFile(path, SPLIT_MARK);
 		    // pobranie próbki K punktów z kolekcji
 		    final List<RealVector> centroids = KMeansHelper.takeSample(data, K);
-		    
+		    long start = System.currentTimeMillis();
 		    double tempDist;
 		    do{
 		    	// allocate each vector to closest centroid 
@@ -120,6 +120,7 @@ public class GridGainKmeansTest {
 		        System.out.println("Finished iteration (delta = " + tempDist + ")");
    	
 		    }while(tempDist > convergeDist);
+		    System.out.println(String.format("Algorithm finished: %s[ms]", (System.currentTimeMillis() - start)));
 		}
 	}
 	

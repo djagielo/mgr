@@ -13,8 +13,8 @@ public class GridGainKmeansTestStarter {
 			// Usage: JavaKMeans <master> <file> <k> <convergeDist>;
 		 String [] arguments = new String[] {
 	    		  "X:\\Politechnika\\Magisterka\\praca magisterka\\dane testowe\\dailySportsActivitiesCumulated.txt",
-	    		  "11",
-	    		  "0.1"};
+	    		  "19",
+	    		  "10"};
 		 logger.debug("Test");
 			GridGainKmeansTest.main(arguments);
 	}

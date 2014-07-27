@@ -8,7 +8,7 @@ public class JppfKmeansTestStarter {
 		  String [] arguments = new String[] { 
 	    		  "X:\\Politechnika\\Magisterka\\praca magisterka\\dane testowe\\dailySportsActivitiesCumulated.txt",
 	    		  "19",
-	    		  "0.1"};
+	    		  "10"};
 		JppfKMeansTest.main(arguments);
 	}
 
