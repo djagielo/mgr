@@ -5,12 +5,13 @@ import java.util.List;
 
 import org.apache.commons.math3.linear.RealVector;
 
-import pl.polsl.kmeans.KMeansHelper;
+import pl.polsl.data.RealVectorDataPreparator;
 
 public class DistanceTest {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		List<RealVector> vectors = KMeansHelper.readDataFromFile("X:\\Politechnika\\Magisterka\\praca magisterka\\dane testowe\\dailySportsActivitiesCumulated.txt", ",");
+		RealVectorDataPreparator dp = new RealVectorDataPreparator("X:\\Politechnika\\Magisterka\\praca magisterka\\dane testowe\\dailySportsActivitiesCumulated.txt", ",");
+		List<RealVector> vectors = dp.getAllData();
 		
 		RealVector start = vectors.get(0);
 		
