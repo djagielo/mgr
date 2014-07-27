@@ -31,7 +31,7 @@ import org.apache.spark.mllib.linalg.Vectors;
 /**
  * Example using MLLib KMeans from Java.
  */
-public final class ApacheSparkKMeansMLTest {
+public final class ApacheSparkKMeansMLTest{
 
   private static class ParsePoint implements Function<String, Vector> {
 	  private static final Pattern SPLIT_MARK = Pattern.compile(",");

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -14,7 +13,7 @@ import pl.polsl.data.StringDataPreparator;
 import pl.polsl.utils.hashes.AvailableHashes;
 import pl.polsl.utils.hashes.MultipleHashUtil;
 
-public class ApacheSparkHashTest {
+public class ApacheSparkHashTest{
 	private static final AvailableHashes [] ALL_HASHES_ARRAY = {AvailableHashes.SHA256, AvailableHashes.SHA512, AvailableHashes.MD5, AvailableHashes.MD2, AvailableHashes.SHA384};
 	
 	public static void main(String[] args) {

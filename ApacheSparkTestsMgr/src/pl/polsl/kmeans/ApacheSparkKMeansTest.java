@@ -1,10 +1,9 @@
 package pl.polsl.kmeans;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -21,7 +20,7 @@ import com.google.common.collect.Lists;
  * K-means clustering using Java API.
  */
 @SuppressWarnings("deprecation")
-public class ApacheSparkKMeansTest {
+public class ApacheSparkKMeansTest{
 	private static final boolean USE_ITERATOR = false;
 	private static final String SPLIT_MARK = ",";
 
@@ -30,11 +29,12 @@ public class ApacheSparkKMeansTest {
       System.err.println("Usage: JavaKMeans <master> <file> <k> <convergeDist>");
       System.exit(1);    
     }
-    JavaSparkContext sc = new JavaSparkContext(args[0], "JavaKMeans",
-      System.getenv("SPARK_HOME"), System.getenv("SPARK_EXAMPLES_JAR"));
+
     String path = args[1];
     int K = Integer.parseInt(args[2]);
     double convergeDist = Double.parseDouble(args[3]);
+    SparkConf sparkConf = new SparkConf().setAppName("JavaKMeans").setMaster(args[0]);
+    JavaSparkContext sc = new JavaSparkContext(sparkConf);
     long start = System.currentTimeMillis();
     JavaRDD<Vector> data = sc.textFile(path).map(
       new Function<String, Vector>() {
