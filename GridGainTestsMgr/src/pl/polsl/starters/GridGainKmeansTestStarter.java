@@ -15,7 +15,6 @@ public class GridGainKmeansTestStarter {
 	    		  "X:\\Politechnika\\Magisterka\\praca magisterka\\dane testowe\\dailySportsActivitiesCumulated.txt",
 	    		  "19",
 	    		  "10"};
-		 logger.debug("Test");
 			GridGainKmeansTest.main(arguments);
 	}
 

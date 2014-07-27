@@ -135,8 +135,6 @@ public class GridGainKmeansTest2 {
 		}
 	}
 	
-
-	
 	private static Collection<? extends Pair<Integer, List<RealVector>>> toListOfPairs(Set<Entry<Integer, List<RealVector>>> entrySet) {
 		List<Pair<Integer, List<RealVector>>> out = new LinkedList<>();
 		

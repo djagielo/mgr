@@ -22,6 +22,8 @@ import org.gridgain.grid.GridGain;
 import org.gridgain.grid.lang.GridClosure;
 import org.gridgain.grid.lang.GridReducer;
 
+import pl.polsl.data.RealVectorDataPreparator;
+
 public class GridGainKmeansTest {
 	
 	private static final String SPLIT_MARK = ",";
@@ -35,16 +37,16 @@ public class GridGainKmeansTest {
 		    int K = Integer.parseInt(args[1]);
 		    double convergeDist = Double.parseDouble(args[2]);
 		    
-		    // wczytanie pliku do kolekcji
-		    List<RealVector> data = KMeansHelper.readDataFromFile(path, SPLIT_MARK);
-		    // pobranie próbki K punktów z kolekcji
+		    RealVectorDataPreparator dp = new RealVectorDataPreparator(path, SPLIT_MARK);
+		    // reading all data to list
+		    List<RealVector> data = dp.getAllData();
+		    // take sample of K size
 		    final List<RealVector> centroids = KMeansHelper.takeSample(data, K);
 		    long start = System.currentTimeMillis();
 		    double tempDist;
 		    do{
 		    	// allocate each vector to closest centroid 
 		    	Map<Integer, List<RealVector>> pointsGroup = g.compute().apply(new GridClosure<RealVector, Pair<Integer, RealVector>>() {
-		    		List<Integer> list = new LinkedList<Integer>();
 					@Override
 					public Pair<Integer,RealVector> apply(RealVector vector) {
 						int i = KMeansHelper.closestPoint(vector, centroids);
@@ -123,8 +125,6 @@ public class GridGainKmeansTest {
 		    System.out.println(String.format("Algorithm finished: %s[ms]", (System.currentTimeMillis() - start)));
 		}
 	}
-	
-
 	
 	private static Collection<? extends Pair<Integer, List<RealVector>>> toListOfPairs(Set<Entry<Integer, List<RealVector>>> entrySet) {
 		List<Pair<Integer, List<RealVector>>> out = new LinkedList<>();
