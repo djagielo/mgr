@@ -9,6 +9,7 @@ import java.util.Scanner;
 import org.apache.spark.util.Vector;
 
 import pl.polsl.kmeans.ApacheSparkKMeansTest;
+import pl.polsl.utils.ApacheSparkKMeansHelper;
 
 public class AverageTest {
 	private static final String SPLIT_MARK = ",";
@@ -22,7 +23,7 @@ public class AverageTest {
 			vectors.add(v);
 		}
 		
-		System.out.println(ApacheSparkKMeansTest.average(vectors));
+		System.out.println(ApacheSparkKMeansHelper.average(vectors));
 	}
 	
 	static Vector parseVector(String line) {

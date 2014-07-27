@@ -23,7 +23,6 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-
 import org.apache.spark.mllib.clustering.KMeans;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
@@ -35,9 +34,7 @@ import org.apache.spark.mllib.linalg.Vectors;
 public final class ApacheSparkKMeansMLTest {
 
   private static class ParsePoint implements Function<String, Vector> {
-    //private static final Pattern SPACE = Pattern.compile(" ");
 	  private static final Pattern SPLIT_MARK = Pattern.compile(",");
- 
 
     @Override
     public Vector call(String line) {
@@ -65,8 +62,11 @@ public final class ApacheSparkKMeansMLTest {
     if (args.length >= 5) {
       runs = Integer.parseInt(args[4]);
     }
-    SparkConf sparkConf = new SparkConf().setAppName("JavaKMeans").setMaster(master);
+    SparkConf sparkConf = new SparkConf().setAppName("ApacheSparkKMeansML").setMaster(master);
     JavaSparkContext sc = new JavaSparkContext(sparkConf);
+    
+    long start = System.currentTimeMillis();
+    
     JavaRDD<String> lines = sc.textFile(inputFile);
 
     JavaRDD<Vector> points = lines.map(new ParsePoint());
@@ -80,6 +80,8 @@ public final class ApacheSparkKMeansMLTest {
     double cost = model.computeCost(points.rdd());
     System.out.println("Cost: " + cost);
 
+    System.out.println(String.format("ApacheSparkKMeansMLTest executed in: %s[ms]", (System.currentTimeMillis() - start)));
+    
     sc.stop();
   }
 }
