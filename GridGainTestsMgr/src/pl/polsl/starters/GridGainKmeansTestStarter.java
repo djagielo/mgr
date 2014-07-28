@@ -12,6 +12,7 @@ public class GridGainKmeansTestStarter {
 	public static void main(String[] args) throws FileNotFoundException, GridException {
 			// Usage: JavaKMeans <master> <file> <k> <convergeDist>;
 		 String [] arguments = new String[] {
+				  "config/example-compute-local.xml",
 	    		  "X:\\Politechnika\\Magisterka\\praca magisterka\\dane testowe\\dailySportsActivitiesCumulated.txt",
 	    		  "19",
 	    		  "10"};

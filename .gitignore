@@ -6,3 +6,5 @@
 /example projects/JPPF-4.2-samples-pack/WordCount/classes-client/org/jppf/example/wordcount/*.class
 /example projects/JPPF-4.2-samples-pack/ConcurrentJobs/classes/org/jppf/example/concurrentjobs/*.class
 *.class
+/ApacheSparkTestsMgr/apacheSpark.log
+/JppfTestsMgr/dist/jppf.log

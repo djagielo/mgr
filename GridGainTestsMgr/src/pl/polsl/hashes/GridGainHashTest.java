@@ -20,15 +20,16 @@ public class GridGainHashTest {
 	private static final AvailableHashes [] ALL_HASHES_ARRAY = {AvailableHashes.SHA256, AvailableHashes.SHA512, AvailableHashes.MD5, AvailableHashes.MD2, AvailableHashes.SHA384};
 	
 	public static void main(String[] args) throws GridException {
-		if (args.length < 2) {
-		      System.err.println("Usage: GridGainHashTest <file> <partitionSize>");
+		if (args.length < 3) {
+		      System.err.println("Usage: GridGainHashTest <config> <file> <partitionSize>");
 		      System.exit(1);    
 		}
 		
-		String file = args[0];
-		Integer partitionSize = Integer.parseInt(args[1]);
+		String config = args[0];
+		String file = args[1];
+		Integer partitionSize = Integer.parseInt(args[2]);
 		
-		try (Grid g = GridGain.start()) {
+		try (Grid g = GridGain.start(config)) {
 			List<List<String>> data = prepareDataForTest(file, partitionSize);
 			long start = System.currentTimeMillis();
 			Collection<Map<String, Map<String, String>>> result = g.compute().apply(new GridClosure<List<String>, Map<String, Map<String, String>>>() {

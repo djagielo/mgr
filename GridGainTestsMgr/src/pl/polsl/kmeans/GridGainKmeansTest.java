@@ -28,15 +28,15 @@ public class GridGainKmeansTest {
 	
 	private static final String SPLIT_MARK = ",";
 	public static void main(String[] args) throws GridException, FileNotFoundException {
-		if (args.length < 3) {
-			System.err.println("Usage: JavaKMeans <file> <k> <convergeDist>");
+		if (args.length < 4) {
+			System.err.println("Usage: JavaKMeans <config> <file> <k> <convergeDist>");
 			System.exit(1);
 		}
-		try(Grid g = GridGain.start()){
-		    String path = args[0];
-		    int K = Integer.parseInt(args[1]);
-		    double convergeDist = Double.parseDouble(args[2]);
-		    
+		String config = args[0];
+	    String path = args[1];
+	    int K = Integer.parseInt(args[2]);
+	    double convergeDist = Double.parseDouble(args[3]);
+		try(Grid g = GridGain.start(config)){		    
 		    RealVectorDataPreparator dp = new RealVectorDataPreparator(path, SPLIT_MARK);
 		    // reading all data to list
 		    List<RealVector> data = dp.getAllData();
