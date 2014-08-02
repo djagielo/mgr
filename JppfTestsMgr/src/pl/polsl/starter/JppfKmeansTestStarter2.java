@@ -1,8 +1,8 @@
 package pl.polsl.starter;
 
-import pl.polsl.kmeans.JppfKMeansTest;
+import pl.polsl.kmeans2.JppfKMeansTest;
 
-public class JppfKmeansTestStarter {
+public class JppfKmeansTestStarter2 {
 
 	public static void main(String[] args) throws Exception {
 		//Usage: JppfKMeans <file> <k> <submitQueSize> <tasksPerJob> <convergeDist> <partitionSize>
@@ -12,7 +12,7 @@ public class JppfKmeansTestStarter {
 	    		  "40",
 	    		  "2000000",
 	    		  "10",
-	    		  "1"};
+	    		  "100"};
 		JppfKMeansTest.main(arguments);
 	}
 

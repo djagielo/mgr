@@ -1,4 +1,4 @@
-package pl.polsl.kmeans;
+package pl.polsl.kmeans2;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -11,6 +11,9 @@ import org.jppf.JPPFException;
 import org.jppf.client.JPPFJob;
 import org.jppf.task.storage.DataProvider;
 
+import pl.polsl.kmeans2.ClosestCentroidMerger;
+import pl.polsl.kmeans2.NewCentroidsMerger;
+
 public class JobProvider {
 	
 	private AtomicInteger submittedTasks;
@@ -18,21 +21,28 @@ public class JobProvider {
 	
 	private ClosestCentroidMerger closestCentroidsMerger;
 	private NewCentroidsMerger newCentroidsMerger;
-	
+	private DataProvider dataProvider = null;
 	
 	public JobProvider(){
 		this.submittedTasks = new AtomicInteger();
 		this.finishedTasks = new AtomicInteger();
 	}
 	
-	public JPPFJob createClosestCentroidsJob(List<List<RealVector>> data, List<RealVector> centroids) throws JPPFException{
+	public JobProvider(DataProvider dataProvider){
+		this();
+		this.dataProvider = dataProvider;
+	}
+	
+	public JPPFJob createClosestCentroidsJob(List<List<Integer>> data, List<RealVector> centroids) throws JPPFException{
 		submittedTasks.set(0);
 		finishedTasks.set(0);
 		JPPFJob job = new JPPFJob();
     	job.setName("closestCentroids");
     	this.closestCentroidsMerger = new ClosestCentroidMerger(finishedTasks);
     	job.addJobListener(this.closestCentroidsMerger);
-    	for(List<RealVector> vectors: data){
+    	if(this.dataProvider != null)
+    		job.setDataProvider(this.dataProvider);
+    	for(List<Integer> vectors: data){
     		job.add(new ClosestCentroidAllocationTask(vectors, centroids), null);
     		submittedTasks.addAndGet(1);
     	}
@@ -40,7 +50,7 @@ public class JobProvider {
     	return job;
 	}
 	
-	public List<JPPFJob> createClosestCentroidsJobs(List<List<RealVector>> data, List<RealVector> centroids, int maxTasksPerJob) throws JPPFException{
+	public List<JPPFJob> createClosestCentroidsJobs(List<List<Integer>> data, List<RealVector> centroids, int maxTasksPerJob) throws JPPFException{
 		submittedTasks.set(0);
 		finishedTasks.set(0);
 		
@@ -51,12 +61,15 @@ public class JobProvider {
 		job.setBlocking(false);
 		this.closestCentroidsMerger = new ClosestCentroidMerger(finishedTasks);
 		job.addJobListener(this.closestCentroidsMerger);
-		
-		for(List<RealVector> vectors: data){
+    	if(this.dataProvider != null)
+    		job.setDataProvider(this.dataProvider);
+		for(List<Integer> vectors: data){
 			if(job == null){
 				job = new JPPFJob();
 				job.setBlocking(false);
 				job.addJobListener(this.closestCentroidsMerger);
+		    	if(this.dataProvider != null)
+		    		job.setDataProvider(this.dataProvider);
 			}
 			
 			job.add(new ClosestCentroidAllocationTask(vectors, centroids), null);

@@ -8,7 +8,7 @@ public class JppfHashTestStarter {
 		//Usage: JppfHashTest <file> <partitionSize>
 		String [] arguments = {
 				"testdata/john.txt",
-				"100"};
+				"1"};
 		
 		JppfHashTest.main(arguments);
 	}

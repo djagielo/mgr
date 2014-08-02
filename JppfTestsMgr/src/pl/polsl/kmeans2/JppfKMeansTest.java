@@ -1,13 +1,22 @@
-package pl.polsl.kmeans;
+package pl.polsl.kmeans2;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.math3.linear.RealVector;
 import org.jppf.client.JPPFClient;
 import org.jppf.client.JPPFJob;
+import org.jppf.task.storage.DataProvider;
+import org.jppf.task.storage.MemoryMapDataProvider;
 
 import pl.polsl.data.RealVectorDataPreparator;
+import pl.polsl.kmeans2.JobProvider;
+import pl.polsl.kmeans.KMeansHelper;
+import pl.polsl.kmeans.SubmitQueue;
 
 public class JppfKMeansTest {
 	private static final String SPLIT_MARK = ",";
@@ -26,18 +35,22 @@ public class JppfKMeansTest {
 		    
 		    RealVectorDataPreparator dp = new RealVectorDataPreparator(path, SPLIT_MARK);
 		    // reading all data to list
-		    List<RealVector> allData = dp.getAllData();
-		    dp.refreshDataSource();
-		    List<List<RealVector>> data = dp.getPartitionedData(partitionSize);
+		    List<RealVector> data = dp.getAllData();
 		    // take sample of K size
-		    final List<RealVector> centroids = KMeansHelper.takeSample(allData, K);
+		    final List<RealVector> centroids = KMeansHelper.takeSample(data, K);
 		    SubmitQueue queue = new SubmitQueue(submitQueSize, client);
+		    List<List<Integer>> partitionedIndexes = getPartitionedData(data, partitionSize);
 		    long start = System.currentTimeMillis();
+		    
+		    // data provider mechanism
+		    DataProvider dataProvider = new MemoryMapDataProvider();
+		    dataProvider.setParameter("data", data);
+//		    
 		    double tempDist;
 		    do{
 		    	// 1. allocate each vector to closest centroid and group by id
-		    	JobProvider jobProvider = new JobProvider();
-		    	List<JPPFJob> allocateJobs = jobProvider.createClosestCentroidsJobs(data, centroids,tasksPerJob);
+		    	JobProvider jobProvider = new JobProvider(dataProvider);
+		    	List<JPPFJob> allocateJobs = jobProvider.createClosestCentroidsJobs(partitionedIndexes, centroids,tasksPerJob);
 		    	System.out.println(String.format("Allocate jobs size: %s", allocateJobs.size()));
 		    	for(JPPFJob job: allocateJobs)
 		    		queue.submit(job);
@@ -85,6 +98,48 @@ public class JppfKMeansTest {
 		
 		}
 
+	}
+	
+	private static List<Integer> takeSample(List<RealVector> data, int k){
+		Random random = new Random(System.currentTimeMillis());
+		int s = data.size();
+		List<Integer> usedIndexes = new ArrayList<Integer>();
+		for (int i = 0; i < s; i++) {
+			int randomIndex = -1;
+			do {
+				randomIndex = random.nextInt(s - 1);
+			} while (randomIndex < 0 || usedIndexes.contains(randomIndex));
+			usedIndexes.add(randomIndex);
+		}
+
+		return usedIndexes;
+	}
+	
+	private static List<List<Integer>> getPartitionedData(List<RealVector> data, int partitionSize){
+		if(partitionSize > 0){
+			List<List<Integer>> result = new LinkedList<>();
+		
+				List<Integer> embeddedList = new LinkedList<>();
+				int counter = 0;
+				int cnt = 0;
+				while(cnt <= data.size()-1){
+					embeddedList.add(cnt++);
+					counter++;
+					if(counter == partitionSize){
+						result.add(embeddedList);
+						embeddedList = new LinkedList<>();
+						counter = 0;
+					}
+				}
+				if(embeddedList != null && embeddedList.size() > 0){
+					result.add(embeddedList);
+				}
+
+			
+			return result;
+		}
+		else
+			return null;
 	}
 
 }

@@ -1,4 +1,4 @@
-package pl.polsl.kmeans;
+package pl.polsl.kmeans2;
 
 import java.util.HashMap;
 import java.util.LinkedList;
