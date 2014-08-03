@@ -28,7 +28,7 @@ public class ClosestCentroidAllocationTask extends AbstractTask<List<Pair<Intege
 		List<RealVector> vectors = getVectorsFromDataProvider(this.vectorIds);
 		for(RealVector vector: vectors){
 			int i = KMeansHelper.closestPoint(vector, this.centroids);
-			System.out.println(String.format("Closest point: %s", i));
+			//System.out.println(String.format("Closest point: %s", i));
 			result.add(new ImmutablePair<Integer, RealVector>(i, vector));
 		}
 		
@@ -36,13 +36,14 @@ public class ClosestCentroidAllocationTask extends AbstractTask<List<Pair<Intege
 	}
 
 	private List<RealVector> getVectorsFromDataProvider(List<Integer> vectorIds2) {
+		long start = System.currentTimeMillis();
 		DataProvider dataProvider = getDataProvider();
 		List<RealVector> result = new LinkedList<>();
 		List<RealVector> data = dataProvider.getParameter("data");
 		for(Integer id: vectorIds2){
 			result.add(data.get(id));
 		}
-		
+		System.out.println(String.format("getVectorsFromDataProvider: %s[ms]", (System.currentTimeMillis() - start)));
 		return result;
 	}
 

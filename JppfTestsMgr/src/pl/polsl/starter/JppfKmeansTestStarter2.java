@@ -1,6 +1,6 @@
 package pl.polsl.starter;
 
-import pl.polsl.kmeans2.JppfKMeansTest;
+import pl.polsl.kmeans2.JppfKMeansTest2;
 
 public class JppfKmeansTestStarter2 {
 
@@ -13,7 +13,7 @@ public class JppfKmeansTestStarter2 {
 	    		  "2000000",
 	    		  "10",
 	    		  "100"};
-		JppfKMeansTest.main(arguments);
+		JppfKMeansTest2.main(arguments);
 	}
 
 }
