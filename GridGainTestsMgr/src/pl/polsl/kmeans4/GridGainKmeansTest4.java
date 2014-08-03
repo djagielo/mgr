@@ -1,7 +1,6 @@
-package pl.polsl.kmeans2;
+package pl.polsl.kmeans4;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,25 +8,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.linear.RealVector;
-import org.apache.log4j.Logger;
 import org.gridgain.grid.Grid;
 import org.gridgain.grid.GridException;
+import org.gridgain.grid.GridFuture;
 import org.gridgain.grid.GridGain;
+import org.gridgain.grid.cache.GridCache;
+import org.gridgain.grid.lang.GridCallable;
 import org.gridgain.grid.lang.GridClosure;
 import org.gridgain.grid.lang.GridReducer;
 
 import pl.polsl.data.RealVectorDataPreparator;
 import pl.polsl.kmeans.KMeansHelper;
 
-public class GridGainKmeansTest2 {
+// implementacja zwracania w pierwszym roku algorytmu mapy ze œrednimi wektorami zamiast
+// listy wektorów
+public class GridGainKmeansTest4 {
 	
 	private static final String SPLIT_MARK = ",";
+	private static final String CACHE_NAME = "dataCache";
 	public static void main(String[] args) throws GridException, FileNotFoundException {
 		if (args.length < 5) {
 			System.err.println("Usage: JavaKMeans <file> <k> <partitionSize> <convergeDist>");
@@ -46,53 +49,80 @@ public class GridGainKmeansTest2 {
 		    List<List<RealVector>> partitionedData = dp.getPartitionedData(partitionSize);
 		    // take sample of K size
 		    final List<RealVector> centroids = KMeansHelper.takeSample(data, K);
+		    
+		    Map<String, List<RealVector>> dataForCaching = prepareDataForCaching(partitionedData);
+		    
+		    long cacheStart = System.currentTimeMillis();
+		    GridCache<String, List<RealVector>> cache = GridGain.grid().cache(CACHE_NAME);
+		    
+		    for(Entry<String, List<RealVector>> entry: dataForCaching.entrySet()){
+		    	cache.putxIfAbsent(entry.getKey(), entry.getValue());
+		    }
+		    System.out.println(String.format("Preparing cache ended in: %s[ms]", (System.currentTimeMillis() - cacheStart)));
+		    
+		   
 		    long start = System.currentTimeMillis();
 		    double tempDist;
 		    do{
-		    	// allocate each vector to closest centroid 
-		    	Map<Integer, List<RealVector>> pointsGroup = g.forRemotes().compute().apply(new GridClosure<List<RealVector>, List<Pair<Integer, RealVector>>>() {
-					@Override
-					public List<Pair<Integer,RealVector>> apply(List<RealVector> vectors) {
-						List<Pair<Integer, RealVector>> result = new LinkedList<>();
-						for(RealVector vector: vectors){
-							int i = KMeansHelper.closestPoint(vector, centroids);
-							result.add(new ImmutablePair<Integer, RealVector>(i, vector));
-						}
-						
-						return result;
-					}
-				}, 
-				
-				partitionedData,
-				
-				// group by cluster id and average the vectors within each cluster to compute centroids
-				new GridReducer<List<Pair<Integer, RealVector>>, Map<Integer, List<RealVector>>>() {	
-					Map<Integer, List<RealVector>> result = new HashMap<>();
-					Map<Integer, List<RealVector>> synchroResult = Collections.synchronizedMap(result);
-					
-					@Override
-					public boolean collect(List<Pair<Integer, RealVector>> pairs) {
-						for(Pair<Integer, RealVector> pair: pairs){
-							if(synchroResult.containsKey(pair.getLeft())){
-								List<RealVector> results = synchroResult.get(pair.getLeft());
-								results.add(pair.getRight());
-								synchroResult.put(pair.getLeft(), results);
-			
-							}
-							else{
-								List<RealVector> values = Collections.synchronizedList(new LinkedList<RealVector>());
-								values.add(pair.getRight());
-								synchroResult.put(pair.getLeft(), values);
-							}
-						}
-						return true;
-					}
+		    	List<GridFuture<Map<Integer, RealVector>>> futures = new LinkedList<>();
+		    	for(final String cacheKey: dataForCaching.keySet()){
+		    		futures.add(g.forRemotes().compute().affinityCall(CACHE_NAME, cacheKey, new GridCallable<Map<Integer, RealVector>>() {
 
-					@Override
-					public Map<Integer, List<RealVector>> reduce() {
-						return synchroResult;
-					}	
-				}).get();
+						@Override
+						public Map<Integer, RealVector> call() throws Exception {
+							List<RealVector> vectors = (List<RealVector>) GridGain.grid().cache(CACHE_NAME).peek(cacheKey);
+							List<Pair<Integer, RealVector>> tmp = new LinkedList<>();
+							for(RealVector vector: vectors){
+								int i = KMeansHelper.closestPoint(vector, centroids);
+								tmp.add(new ImmutablePair<Integer, RealVector>(i, vector));
+							}
+							Map<Integer, List<RealVector>> tmpResult = new HashMap<>();
+							
+							for(Pair<Integer, RealVector> pair: tmp){
+								if(tmpResult.containsKey(pair.getLeft())){
+									// get collection and add vector
+									List<RealVector> list = tmpResult.get(pair.getLeft());
+									list.add(pair.getRight());
+									tmpResult.put(pair.getLeft(), list);
+								}
+								else{
+									List<RealVector> list = new LinkedList<>();
+									list.add(pair.getRight());
+									tmpResult.put(pair.getLeft(), list);
+								}
+							}
+							Map<Integer, RealVector> result = new HashMap<>();
+							for(Entry<Integer, List<RealVector>> entry: tmpResult.entrySet()){
+								result.put(entry.getKey(), KMeansHelper.average(entry.getValue()));
+							}
+							
+							return result;
+						}
+					}));
+		    	}
+		    	
+		    	List<Map<Integer, RealVector>> tmpResults = new LinkedList<>();
+		    	for(GridFuture<Map<Integer, RealVector>> future: futures){
+		    		tmpResults.add(future.get());
+		    	}
+		    	
+		    	// reduce results
+		    	Map<Integer, List<RealVector>> result = new HashMap<>();
+		    	for(Map<Integer, RealVector> tmpResult: tmpResults){
+		    		for(Entry<Integer, RealVector> pair: tmpResult.entrySet()){
+						if(result.containsKey(pair.getKey())){
+							List<RealVector> results = result.get(pair.getKey());
+							results.add(pair.getValue());
+							result.put(pair.getKey(), results);
+		
+						}
+						else{
+							List<RealVector> values = Collections.synchronizedList(new LinkedList<RealVector>());
+							values.add(pair.getValue());
+							result.put(pair.getKey(), values);
+						}
+					}
+		    	}
 		    	
 		    	Map<Integer, RealVector> newCentroids = g.forRemotes().compute().apply(new GridClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
 
@@ -101,7 +131,7 @@ public class GridGainKmeansTest2 {
 						return new ImmutablePair<Integer, RealVector>(pair.getLeft(),KMeansHelper.average(pair.getRight()));
 					}
 				},
-				toListOfPairs(pointsGroup.entrySet()),
+				toListOfPairs(result.entrySet()),
 				
 				new GridReducer<Pair<Integer, RealVector>, Map<Integer, RealVector>>() {
 					Map<Integer, RealVector> result = new HashMap<>();
@@ -143,6 +173,17 @@ public class GridGainKmeansTest2 {
 		}
 		
 		return out;
+	}
+	
+	private static Map<String, List<RealVector>> prepareDataForCaching(List<List<RealVector>> dataSet){
+		Map<String, List<RealVector>> result = new HashMap<>();
+		int counter = 0;
+		for(List<RealVector> data: dataSet){
+			String key = String.format("key_%s", counter++);
+			result.put(key, data);
+		}
+		
+		return result;
 	}
 
 }
