@@ -18,7 +18,7 @@ import pl.polsl.kmeans2.JobProvider;
 import pl.polsl.kmeans.KMeansHelper;
 import pl.polsl.kmeans.SubmitQueue;
 
-public class JppfKMeansTest {
+public class JppfKMeansTest2 {
 	private static final String SPLIT_MARK = ",";
 	public static void main(String[] args) throws Exception {
 		if (args.length < 6) {
