@@ -8,3 +8,5 @@
 *.class
 /ApacheSparkTestsMgr/apacheSpark.log
 /JppfTestsMgr/dist/jppf.log
+/ApacheSparkTestsMgr/*.log
+*.log
