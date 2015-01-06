@@ -10,3 +10,4 @@
 /JppfTestsMgr/dist/jppf.log
 /ApacheSparkTestsMgr/*.log
 *.log
+/example projects/GridGainMgr/target

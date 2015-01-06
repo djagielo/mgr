@@ -4,21 +4,26 @@
 	<groupId>JppfTestsMgr</groupId>
 	<artifactId>JppfTestsMgr</artifactId>
 	<version>0.0.1</version>
+	
+	<properties>
+		<jppf.version>4.2.5</jppf.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.jppf</groupId>
 			<artifactId>jppf-client</artifactId>
-			<version>4.2</version>
+			<version>${jppf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jppf</groupId>
 			<artifactId>jppf-common</artifactId>
-			<version>4.2</version>
+			<version>${jppf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jppf</groupId>
 			<artifactId>jppf-common-node</artifactId>
-			<version>4.2</version>
+			<version>${jppf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -69,8 +74,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 		</plugins>
