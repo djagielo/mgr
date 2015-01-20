@@ -7,8 +7,6 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.util.Vector;
 
 import pl.polsl.utils.ApacheSparkKMeansHelper;
@@ -37,12 +35,7 @@ public class ApacheSparkKMeansTest{
     JavaSparkContext sc = new JavaSparkContext(sparkConf);
     long start = System.currentTimeMillis();
     JavaRDD<Vector> data = sc.textFile(path).map(
-      new Function<String, Vector>() {
-        @Override
-        public Vector call(String line) throws Exception {
-          return ApacheSparkKMeansHelper.parseVector(line, SPLIT_MARK);
-        }
-      }
+    		line -> ApacheSparkKMeansHelper.parseVector(line, SPLIT_MARK)
     ).cache();
 
     final List<Vector> centroids = data.takeSample(false, K, 42);
@@ -50,33 +43,21 @@ public class ApacheSparkKMeansTest{
     do {
       // allocate each vector to closest centroid   	
       JavaPairRDD<Integer, Vector> closest = data.mapToPair(
-        new PairFunction<Vector, Integer, Vector>() {
-          @Override
-          public Tuple2<Integer, Vector> call(Vector vector) throws Exception {
-            return new Tuple2<Integer, Vector>(
-              ApacheSparkKMeansHelper.closestPoint(vector, centroids), vector);
-          }
-        }
+    		  vector -> new Tuple2<Integer, Vector>(ApacheSparkKMeansHelper.closestPoint(vector, centroids), vector)
       );
 
       // group by cluster id and average the vectors within each cluster to compute centroids
       JavaPairRDD<Integer, Iterable<Vector>> pointsGroup = closest.groupByKey();
       Map<Integer, Vector> newCentroids = pointsGroup.mapValues(
-        new Function<Iterable<Vector>, Vector>() {
-          public Vector call(Iterable<Vector> ps) throws Exception {
-        	  if(USE_ITERATOR){
-        		  return ApacheSparkKMeansHelper.average(ps);
-        	  }
-        	  else{
-        		  return ApacheSparkKMeansHelper.average(Lists.newArrayList(ps));        		  
-        	  }
-          }
-        }).collectAsMap();
+    		  ps -> (USE_ITERATOR ? ApacheSparkKMeansHelper.average(ps) 
+    				  				: ApacheSparkKMeansHelper.average(Lists.newArrayList(ps)))
+    		  ).collectAsMap();
       tempDist = 0.0;
   	
       for (int i = 0; i < K; i++) {
         tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
       }
+
       for (Map.Entry<Integer, Vector> t: newCentroids.entrySet()) {
         centroids.set(t.getKey(), t.getValue());
       }
@@ -90,6 +71,7 @@ public class ApacheSparkKMeansTest{
     
     System.out.println(String.format("ApacheSparkKMeansTest executed in: %s[ms]", (System.currentTimeMillis() - start)));
 
+    sc.close();
     System.exit(0);
 
   }

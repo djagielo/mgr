@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
 
 import pl.polsl.data.StringDataPreparator;
 import pl.polsl.utils.hashes.AvailableHashes;
@@ -33,10 +32,8 @@ public class ApacheSparkHashTest{
 	    long start = System.currentTimeMillis();
 	    JavaRDD<List<String>> parallelData = jsc.parallelize(data);
 	    
-	    JavaRDD<Map<String, Map<String, String>>> result = parallelData.map(new Function<List<String>, Map<String, Map<String, String>>>() {
-
-			@Override
-			public Map<String, Map<String, String>> call(List<String> particle)throws Exception {
+	    @SuppressWarnings("resource")
+		JavaRDD<Map<String, Map<String, String>>> result = parallelData.map( particle -> {
 				MultipleHashUtil hashUtil = new MultipleHashUtil(ALL_HASHES_ARRAY);
 				Map<String, Map<String, String>> results = new HashMap<>();
 				for(String s: particle){
@@ -46,9 +43,12 @@ public class ApacheSparkHashTest{
 				
 				return results;
 			}
-		});
+		);
 	    
 	    result.collect();
+	    
+	    if(jsc != null)
+	    	jsc.close();
 	    System.out.println(String.format("ApacheSparkHashTest executed in: %s[ms]", (System.currentTimeMillis() - start)));
 	}
 	

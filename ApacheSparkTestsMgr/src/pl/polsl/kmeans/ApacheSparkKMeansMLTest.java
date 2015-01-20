@@ -34,7 +34,8 @@ import org.apache.spark.mllib.linalg.Vectors;
 public final class ApacheSparkKMeansMLTest{
 
   private static class ParsePoint implements Function<String, Vector> {
-	  private static final Pattern SPLIT_MARK = Pattern.compile(",");
+	private static final long serialVersionUID = 4288126825728569854L;
+	private static final Pattern SPLIT_MARK = Pattern.compile(",");
 
     @Override
     public Vector call(String line) {
@@ -83,5 +84,6 @@ public final class ApacheSparkKMeansMLTest{
     System.out.println(String.format("ApacheSparkKMeansMLTest executed in: %s[ms]", (System.currentTimeMillis() - start)));
     
     sc.stop();
+    sc.close();
   }
 }
