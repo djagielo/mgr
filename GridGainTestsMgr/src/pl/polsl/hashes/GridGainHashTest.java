@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteException;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.lang.IgniteClosure;
 import org.apache.log4j.Logger;
-import org.gridgain.grid.Grid;
-import org.gridgain.grid.GridException;
-import org.gridgain.grid.GridGain;
-import org.gridgain.grid.lang.GridClosure;
 
 import pl.polsl.data.StringDataPreparator;
 import pl.polsl.utils.hashes.AvailableHashes;
@@ -19,7 +19,7 @@ public class GridGainHashTest {
 	private static Logger logger = Logger.getLogger(GridGainHashTest.class);
 	private static final AvailableHashes [] ALL_HASHES_ARRAY = {AvailableHashes.SHA256, AvailableHashes.SHA512, AvailableHashes.MD5, AvailableHashes.MD2, AvailableHashes.SHA384};
 	
-	public static void main(String[] args) throws GridException {
+	public static void main(String[] args) throws IgniteException {
 		if (args.length < 3) {
 		      System.err.println("Usage: GridGainHashTest <config> <file> <partitionSize>");
 		      System.exit(1);    
@@ -29,10 +29,10 @@ public class GridGainHashTest {
 		String file = args[1];
 		Integer partitionSize = Integer.parseInt(args[2]);
 		
-		try (Grid g = GridGain.start(config)) {
+		try (Ignite g = Ignition.start(config)) {
 			List<List<String>> data = prepareDataForTest(file, partitionSize);
 			long start = System.currentTimeMillis();
-			Collection<Map<String, Map<String, String>>> result = g.compute().apply(new GridClosure<List<String>, Map<String, Map<String, String>>>() {
+			Collection<Map<String, Map<String, String>>> result = g.compute().apply(new IgniteClosure<List<String>, Map<String, Map<String, String>>>() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
@@ -46,7 +46,7 @@ public class GridGainHashTest {
 					
 					return results;
 				}
-			}, data).get();
+			}, data);
 			  
 			System.out.println(String.format("GridGainHashTest executed in: %s[ms]", (System.currentTimeMillis() - start)));
 		}

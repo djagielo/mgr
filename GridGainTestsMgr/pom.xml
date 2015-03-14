@@ -5,16 +5,21 @@
 	<artifactId>GridGainTestsMgr</artifactId>
 	<version>0.0.1</version>
 	<properties>
-		<gridgain.version>6.5.6</gridgain.version>
-	 <maven.compiler.source>1.8</maven.compiler.source>
-	 <maven.compiler.target>1.8</maven.compiler.target>
+		<ignite.version>1.0.0-RC1</ignite.version>
+
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.gridgain</groupId>
-			<artifactId>gridgain-hpc</artifactId>
-			<version>${gridgain.version}</version>
-			<type>pom</type>
+			<groupId>org.apache.ignite</groupId>
+			<artifactId>ignite-core</artifactId>
+			<version>${ignite.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ignite</groupId>
+			<artifactId>ignite-spring</artifactId>
+			<version>${ignite.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -36,11 +41,11 @@
 			<artifactId>guava</artifactId>
 			<version>17.0</version>
 		</dependency>
-	 <dependency>
-	  <groupId>CommonUtils</groupId>
-	  <artifactId>CommonUtils</artifactId>
-	  <version>0.0.1</version>
-	 </dependency>
+		<dependency>
+			<groupId>CommonUtils</groupId>
+			<artifactId>CommonUtils</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

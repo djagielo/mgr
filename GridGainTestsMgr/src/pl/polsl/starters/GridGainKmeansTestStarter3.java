@@ -2,15 +2,15 @@ package pl.polsl.starters;
 
 import java.io.FileNotFoundException;
 
+import org.apache.ignite.IgniteException;
 import org.apache.log4j.Logger;
-import org.gridgain.grid.GridException;
 
 import pl.polsl.kmeans.GridGainKmeansTest;
 import pl.polsl.kmeans3.GridGainKmeansTest3;
 
 public class GridGainKmeansTestStarter3 {
 	private static Logger logger = Logger.getLogger(GridGainKmeansTest.class);
-	public static void main(String[] args) throws FileNotFoundException, GridException {
+	public static void main(String[] args) throws FileNotFoundException, IgniteException {
 			// Usage: JavaKMeans <master> <file> <k> <partitionSize> <convergeDist>;
 		 String [] arguments = new String[] {
 				  "config/example-compute-local.xml",

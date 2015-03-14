@@ -13,11 +13,11 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.linear.RealVector;
-import org.gridgain.grid.Grid;
-import org.gridgain.grid.GridException;
-import org.gridgain.grid.GridGain;
-import org.gridgain.grid.lang.GridClosure;
-import org.gridgain.grid.lang.GridReducer;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteException;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.lang.IgniteClosure;
+import org.apache.ignite.lang.IgniteReducer;
 
 import pl.polsl.data.RealVectorDataPreparator;
 import pl.polsl.kmeans.KMeansHelper;
@@ -27,7 +27,7 @@ import pl.polsl.kmeans.KMeansHelper;
 public class GridGainKmeansTest3 {
 	
 	private static final String SPLIT_MARK = ",";
-	public static void main(String[] args) throws GridException, FileNotFoundException {
+	public static void main(String[] args) throws IgniteException, FileNotFoundException {
 		if (args.length < 5) {
 			System.err.println("Usage: JavaKMeans <file> <k> <partitionSize> <convergeDist>");
 			System.exit(1);
@@ -37,7 +37,7 @@ public class GridGainKmeansTest3 {
 	    int K = Integer.parseInt(args[2]);
 	    int partitionSize = Integer.parseInt(args[3]);
 	    double convergeDist = Double.parseDouble(args[4]);
-		try(Grid g = GridGain.start(config)){		    
+		try(Ignite g = Ignition.start(config)){		    
 		    RealVectorDataPreparator dp = new RealVectorDataPreparator(path, SPLIT_MARK);
 		    // reading all data to list
 		    List<RealVector> data = dp.getAllData();
@@ -49,7 +49,7 @@ public class GridGainKmeansTest3 {
 		    double tempDist;
 		    do{
 		    	// allocate each vector to closest centroid 
-		    	Map<Integer, List<RealVector>> pointsGroup = g.compute().apply(new GridClosure<List<RealVector>, Map<Integer, RealVector>>() {
+		    	Map<Integer, List<RealVector>> pointsGroup = g.compute().apply(new IgniteClosure<List<RealVector>, Map<Integer, RealVector>>() {
 					@Override
 					public Map<Integer, RealVector> apply(List<RealVector> vectors) {
 						List<Pair<Integer, RealVector>> tmp = new LinkedList<>();
@@ -84,7 +84,7 @@ public class GridGainKmeansTest3 {
 				partitionedData,
 				
 				// group by cluster id and average the vectors within each cluster to compute centroids
-				new GridReducer<Map<Integer, RealVector>, Map<Integer, List<RealVector>>>() {	
+				new IgniteReducer<Map<Integer, RealVector>, Map<Integer, List<RealVector>>>() {	
 					Map<Integer, List<RealVector>> result = new HashMap<>();
 					Map<Integer, List<RealVector>> synchroResult = Collections.synchronizedMap(result);
 					
@@ -110,9 +110,9 @@ public class GridGainKmeansTest3 {
 					public Map<Integer, List<RealVector>> reduce() {
 						return synchroResult;
 					}	
-				}).get();
+				});
 		    	
-		    	Map<Integer, RealVector> newCentroids = g.compute().apply(new GridClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
+		    	Map<Integer, RealVector> newCentroids = g.compute().apply(new IgniteClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
 
 					@Override
 					public Pair<Integer, RealVector> apply(Pair<Integer, List<RealVector>> pair) {
@@ -121,7 +121,7 @@ public class GridGainKmeansTest3 {
 				},
 				toListOfPairs(pointsGroup.entrySet()),
 				
-				new GridReducer<Pair<Integer, RealVector>, Map<Integer, RealVector>>() {
+				new IgniteReducer<Pair<Integer, RealVector>, Map<Integer, RealVector>>() {
 					Map<Integer, RealVector> result = new HashMap<>();
 					Map<Integer, RealVector> synchroResult = Collections.synchronizedMap(result);
 					@Override
@@ -135,7 +135,7 @@ public class GridGainKmeansTest3 {
 					public Map<Integer, RealVector> reduce() {
 						return synchroResult;
 					}
-				}).get();
+				});
 		    	
 		    	tempDist = 0.0;
 		        for (int i = 0; i < K; i++) {

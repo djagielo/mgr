@@ -13,14 +13,13 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.linear.RealVector;
-import org.gridgain.grid.Grid;
-import org.gridgain.grid.GridException;
-import org.gridgain.grid.GridFuture;
-import org.gridgain.grid.GridGain;
-import org.gridgain.grid.cache.GridCache;
-import org.gridgain.grid.lang.GridCallable;
-import org.gridgain.grid.lang.GridClosure;
-import org.gridgain.grid.lang.GridReducer;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
+import org.apache.ignite.IgniteException;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.lang.IgniteCallable;
+import org.apache.ignite.lang.IgniteClosure;
+import org.apache.ignite.lang.IgniteReducer;
 
 import pl.polsl.data.RealVectorDataPreparator;
 import pl.polsl.kmeans.KMeansHelper;
@@ -31,7 +30,7 @@ public class GridGainKmeansTest4 {
 	
 	private static final String SPLIT_MARK = ",";
 	private static final String CACHE_NAME = "dataCache";
-	public static void main(String[] args) throws GridException, FileNotFoundException {
+	public static void main(String[] args) throws IgniteException, FileNotFoundException {
 		if (args.length < 5) {
 			System.err.println("Usage: JavaKMeans <file> <k> <partitionSize> <convergeDist>");
 			System.exit(1);
@@ -41,7 +40,7 @@ public class GridGainKmeansTest4 {
 	    int K = Integer.parseInt(args[2]);
 	    int partitionSize = Integer.parseInt(args[3]);
 	    double convergeDist = Double.parseDouble(args[4]);
-		try(Grid g = GridGain.start(config)){		    
+		try(Ignite g = Ignition.start(config)){		    
 		    RealVectorDataPreparator dp = new RealVectorDataPreparator(path, SPLIT_MARK);
 		    // reading all data to list
 		    List<RealVector> data = dp.getAllData();
@@ -53,10 +52,11 @@ public class GridGainKmeansTest4 {
 		    Map<String, List<RealVector>> dataForCaching = prepareDataForCaching(partitionedData);
 		    
 		    long cacheStart = System.currentTimeMillis();
-		    GridCache<String, List<RealVector>> cache = GridGain.grid().cache(CACHE_NAME);
+		    
+		    IgniteCache<String, List<RealVector>> cache = Ignition.ignite().jcache(CACHE_NAME);
 		    
 		    for(Entry<String, List<RealVector>> entry: dataForCaching.entrySet()){
-		    	cache.putxIfAbsent(entry.getKey(), entry.getValue());
+		    	cache.putIfAbsent(entry.getKey(), entry.getValue());
 		    }
 		    System.out.println(String.format("Preparing cache ended in: %s[ms]", (System.currentTimeMillis() - cacheStart)));
 		    
@@ -64,13 +64,13 @@ public class GridGainKmeansTest4 {
 		    long start = System.currentTimeMillis();
 		    double tempDist;
 		    do{
-		    	List<GridFuture<Map<Integer, RealVector>>> futures = new LinkedList<>();
+		    	List<Map<Integer, RealVector>> futures = new LinkedList<>();
 		    	for(final String cacheKey: dataForCaching.keySet()){
-		    		futures.add(g.forRemotes().compute().affinityCall(CACHE_NAME, cacheKey, new GridCallable<Map<Integer, RealVector>>() {
+		    		futures.add(g.compute().affinityCall(CACHE_NAME, cacheKey, new IgniteCallable<Map<Integer, RealVector>>() {
 
 						@Override
 						public Map<Integer, RealVector> call() throws Exception {
-							List<RealVector> vectors = (List<RealVector>) GridGain.grid().cache(CACHE_NAME).peek(cacheKey);
+							List<RealVector> vectors = (List<RealVector>) Ignition.ignite().jcache(CACHE_NAME).get(cacheKey);
 							List<Pair<Integer, RealVector>> tmp = new LinkedList<>();
 							for(RealVector vector: vectors){
 								int i = KMeansHelper.closestPoint(vector, centroids);
@@ -102,8 +102,8 @@ public class GridGainKmeansTest4 {
 		    	}
 		    	
 		    	List<Map<Integer, RealVector>> tmpResults = new LinkedList<>();
-		    	for(GridFuture<Map<Integer, RealVector>> future: futures){
-		    		tmpResults.add(future.get());
+		    	for(Map<Integer, RealVector> future: futures){
+		    		tmpResults.add(future);
 		    	}
 		    	
 		    	// reduce results
@@ -124,7 +124,7 @@ public class GridGainKmeansTest4 {
 					}
 		    	}
 		    	
-		    	Map<Integer, RealVector> newCentroids = g.forRemotes().compute().apply(new GridClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
+		    	Map<Integer, RealVector> newCentroids = g.compute().apply(new IgniteClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
 
 					@Override
 					public Pair<Integer, RealVector> apply(Pair<Integer, List<RealVector>> pair) {
@@ -133,7 +133,7 @@ public class GridGainKmeansTest4 {
 				},
 				toListOfPairs(result.entrySet()),
 				
-				new GridReducer<Pair<Integer, RealVector>, Map<Integer, RealVector>>() {
+				new IgniteReducer<Pair<Integer, RealVector>, Map<Integer, RealVector>>() {
 					Map<Integer, RealVector> result = new HashMap<>();
 					Map<Integer, RealVector> synchroResult = Collections.synchronizedMap(result);
 					@Override
@@ -147,7 +147,7 @@ public class GridGainKmeansTest4 {
 					public Map<Integer, RealVector> reduce() {
 						return synchroResult;
 					}
-				}).get();
+				});
 		    	
 		    	tempDist = 0.0;
 		        for (int i = 0; i < K; i++) {

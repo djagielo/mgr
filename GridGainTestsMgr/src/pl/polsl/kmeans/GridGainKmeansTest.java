@@ -1,7 +1,6 @@
 package pl.polsl.kmeans;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,25 +8,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.linear.RealVector;
-import org.apache.log4j.Logger;
-import org.gridgain.grid.Grid;
-import org.gridgain.grid.GridException;
-import org.gridgain.grid.GridGain;
-import org.gridgain.grid.lang.GridClosure;
-import org.gridgain.grid.lang.GridReducer;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteException;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.lang.IgniteClosure;
+import org.apache.ignite.lang.IgniteReducer;
 
 import pl.polsl.data.RealVectorDataPreparator;
 
 public class GridGainKmeansTest {
 	
 	private static final String SPLIT_MARK = ",";
-	public static void main(String[] args) throws GridException, FileNotFoundException {
+	public static void main(String[] args) throws IgniteException, FileNotFoundException {
 		if (args.length < 4) {
 			System.err.println("Usage: JavaKMeans <config> <file> <k> <convergeDist>");
 			System.exit(1);
@@ -36,7 +33,7 @@ public class GridGainKmeansTest {
 	    String path = args[1];
 	    int K = Integer.parseInt(args[2]);
 	    double convergeDist = Double.parseDouble(args[3]);
-		try(Grid g = GridGain.start(config)){		    
+		try(Ignite g = Ignition.start(config)){		    
 		    RealVectorDataPreparator dp = new RealVectorDataPreparator(path, SPLIT_MARK);
 		    // reading all data to list
 		    System.out.println("Get all data");
@@ -49,7 +46,7 @@ public class GridGainKmeansTest {
 		    do{
 		    	
 		    	// allocate each vector to closest centroid 
-		    	Map<Integer, List<RealVector>> pointsGroup = g.forRemotes().compute().apply(new GridClosure<RealVector, Pair<Integer, RealVector>>() {
+		    	Map<Integer, List<RealVector>> pointsGroup = g.compute().apply(new IgniteClosure<RealVector, Pair<Integer, RealVector>>() {
 					@Override
 					public Pair<Integer,RealVector> apply(RealVector vector) {
 						int i = KMeansHelper.closestPoint(vector, centroids);
@@ -61,7 +58,7 @@ public class GridGainKmeansTest {
 				data,
 				
 				// group by cluster id and average the vectors within each cluster to compute centroids
-				new GridReducer<Pair<Integer, RealVector>, Map<Integer, List<RealVector>>>() {	
+				new IgniteReducer<Pair<Integer, RealVector>, Map<Integer, List<RealVector>>>() {	
 					Map<Integer, List<RealVector>> result = new HashMap<>();
 					Map<Integer, List<RealVector>> synchroResult = Collections.synchronizedMap(result);
 					
@@ -87,9 +84,9 @@ public class GridGainKmeansTest {
 					public Map<Integer, List<RealVector>> reduce() {
 						return synchroResult;
 					}	
-				}).get();
+				});
 		    	System.out.println("New centroids");
-		    	Map<Integer, RealVector> newCentroids = g.forRemotes().compute().apply(new GridClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
+		    	Map<Integer, RealVector> newCentroids = g.compute().apply(new IgniteClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
 
 					@Override
 					public Pair<Integer, RealVector> apply(Pair<Integer, List<RealVector>> pair) {
@@ -99,7 +96,7 @@ public class GridGainKmeansTest {
 				},
 				toListOfPairs(pointsGroup.entrySet()),
 				
-				new GridReducer<Pair<Integer, RealVector>, Map<Integer, RealVector>>() {
+				new IgniteReducer<Pair<Integer, RealVector>, Map<Integer, RealVector>>() {
 					Map<Integer, RealVector> result = new HashMap<>();
 					Map<Integer, RealVector> synchroResult = Collections.synchronizedMap(result);
 					@Override
@@ -113,7 +110,7 @@ public class GridGainKmeansTest {
 					public Map<Integer, RealVector> reduce() {
 						return synchroResult;
 					}
-				}).get();
+				});
 		    	
 		    	tempDist = 0.0;
 		        for (int i = 0; i < K; i++) {

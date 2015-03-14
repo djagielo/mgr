@@ -1,12 +1,12 @@
 package pl.polsl.starters;
 
-import org.gridgain.grid.GridException;
+import org.apache.ignite.IgniteException;
 
 import pl.polsl.hashes.GridGainHashTest;
 
 public class GridGainHashTestStarter {
 
-	public static void main(String[] args) throws GridException {
+	public static void main(String[] args) throws IgniteException {
 		// Usage: GridGainHashTest <file> <partitionSize>
 		String [] arguments = {
 				"config/example-compute-local.xml",

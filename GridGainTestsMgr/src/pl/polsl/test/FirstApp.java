@@ -3,20 +3,20 @@ package pl.polsl.test;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.gridgain.grid.Grid;
-import org.gridgain.grid.GridException;
-import org.gridgain.grid.GridGain;
-import org.gridgain.grid.lang.GridCallable;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteException;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.lang.IgniteCallable;
 
 public class FirstApp {
 
-	public static void main(String[] args) throws GridException {
-		try (Grid g = GridGain.start()) {
-		    Collection<GridCallable<Integer>> calls = new ArrayList<>();
+	public static void main(String[] args) throws IgniteException {
+		try (Ignite g = Ignition.start()) {
+		    Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
 		 
 		    // Iterate through all the words in the sentence and create Callable jobs.
 		    for (final String word : "Count characters using callable".split(" ")) {
-		        calls.add(new GridCallable<Integer>() {
+		        calls.add(new IgniteCallable<Integer>() {
 		            @Override public Integer call() throws Exception {
 		                return word.length();
 		            }
@@ -24,7 +24,7 @@ public class FirstApp {
 		    }
 		 
 		    // Execute collection of Callables on the grid.
-		    Collection<Integer> res = g.compute().call(calls).get();
+		    Collection<Integer> res = g.compute().call(calls);
 		 
 		    int sum = 0;
 		 
