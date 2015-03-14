@@ -6,7 +6,7 @@
 	<version>0.0.1</version>
 	
 	<properties>
-		<jppf.version>4.2.5</jppf.version>
+		<jppf.version>5.0</jppf.version>
 	</properties>
 	
 	<dependencies>
@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>org.jppf</groupId>
 			<artifactId>jppf-common-node</artifactId>
-			<version>${jppf.version}</version>
+			<version>4.2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
