@@ -7,7 +7,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.linear.RealVector;
 import org.jppf.node.protocol.AbstractTask;
-import org.jppf.task.storage.DataProvider;
+import org.jppf.node.protocol.DataProvider;
 
 import pl.polsl.kmeans.KMeansHelper;
 

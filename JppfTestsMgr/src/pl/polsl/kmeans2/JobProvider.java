@@ -9,10 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.linear.RealVector;
 import org.jppf.JPPFException;
 import org.jppf.client.JPPFJob;
-import org.jppf.task.storage.DataProvider;
-
-import pl.polsl.kmeans2.ClosestCentroidMerger;
-import pl.polsl.kmeans2.NewCentroidsMerger;
+import org.jppf.node.protocol.DataProvider;
 
 public class JobProvider {
 	

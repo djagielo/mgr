@@ -21,11 +21,6 @@
 			<version>${jppf.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jppf</groupId>
-			<artifactId>jppf-common-node</artifactId>
-			<version>4.2.7</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 			<version>3.3</version>

@@ -1,6 +1,5 @@
 package pl.polsl.kmeans2;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,11 +9,10 @@ import java.util.Random;
 import org.apache.commons.math3.linear.RealVector;
 import org.jppf.client.JPPFClient;
 import org.jppf.client.JPPFJob;
-import org.jppf.task.storage.DataProvider;
-import org.jppf.task.storage.MemoryMapDataProvider;
+import org.jppf.node.protocol.DataProvider;
+import org.jppf.node.protocol.MemoryMapDataProvider;
 
 import pl.polsl.data.RealVectorDataPreparator;
-import pl.polsl.kmeans2.JobProvider;
 import pl.polsl.kmeans.KMeansHelper;
 import pl.polsl.kmeans.SubmitQueue;
 

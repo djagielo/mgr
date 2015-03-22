@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import org.jppf.JPPFException;
 import org.jppf.client.JPPFClient;
 import org.jppf.client.JPPFJob;
+import org.jppf.node.protocol.JPPFTask;
 import org.jppf.node.protocol.Task;
-import org.jppf.server.protocol.JPPFTask;
 
 import pl.polsl.data.StringDataPreparator;
 import pl.polsl.utils.hashes.AvailableHashes;
