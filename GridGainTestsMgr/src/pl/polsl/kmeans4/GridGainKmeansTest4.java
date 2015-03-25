@@ -66,7 +66,7 @@ public class GridGainKmeansTest4 {
 		    do{
 		    	List<Map<Integer, RealVector>> futures = new LinkedList<>();
 		    	for(final String cacheKey: dataForCaching.keySet()){
-		    		futures.add(g.compute().affinityCall(CACHE_NAME, cacheKey, new IgniteCallable<Map<Integer, RealVector>>() {
+		    		futures.add(g.compute(g.cluster().forRemotes()).affinityCall(CACHE_NAME, cacheKey, new IgniteCallable<Map<Integer, RealVector>>() {
 
 						@Override
 						public Map<Integer, RealVector> call() throws Exception {
@@ -124,7 +124,7 @@ public class GridGainKmeansTest4 {
 					}
 		    	}
 		    	
-		    	Map<Integer, RealVector> newCentroids = g.compute().apply(new IgniteClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
+		    	Map<Integer, RealVector> newCentroids = g.compute(g.cluster().forRemotes()).apply(new IgniteClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
 
 					@Override
 					public Pair<Integer, RealVector> apply(Pair<Integer, List<RealVector>> pair) {

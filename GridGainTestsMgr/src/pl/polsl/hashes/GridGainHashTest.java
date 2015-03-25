@@ -32,7 +32,7 @@ public class GridGainHashTest {
 		try (Ignite g = Ignition.start(config)) {
 			List<List<String>> data = prepareDataForTest(file, partitionSize);
 			long start = System.currentTimeMillis();
-			Collection<Map<String, Map<String, String>>> result = g.compute().apply(new IgniteClosure<List<String>, Map<String, Map<String, String>>>() {
+			Collection<Map<String, Map<String, String>>> result = g.compute(g.cluster().forRemotes()).apply(new IgniteClosure<List<String>, Map<String, Map<String, String>>>() {
 				private static final long serialVersionUID = 1L;
 
 				@Override

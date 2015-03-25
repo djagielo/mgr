@@ -49,7 +49,7 @@ public class GridGainKmeansTest3 {
 		    double tempDist;
 		    do{
 		    	// allocate each vector to closest centroid 
-		    	Map<Integer, List<RealVector>> pointsGroup = g.compute().apply(new IgniteClosure<List<RealVector>, Map<Integer, RealVector>>() {
+		    	Map<Integer, List<RealVector>> pointsGroup = g.compute(g.cluster().forRemotes()).apply(new IgniteClosure<List<RealVector>, Map<Integer, RealVector>>() {
 					@Override
 					public Map<Integer, RealVector> apply(List<RealVector> vectors) {
 						List<Pair<Integer, RealVector>> tmp = new LinkedList<>();
@@ -112,7 +112,7 @@ public class GridGainKmeansTest3 {
 					}	
 				});
 		    	
-		    	Map<Integer, RealVector> newCentroids = g.compute().apply(new IgniteClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
+		    	Map<Integer, RealVector> newCentroids = g.compute(g.cluster().forRemotes()).apply(new IgniteClosure<Pair<Integer, List<RealVector>>, Pair<Integer, RealVector>>() {
 
 					@Override
 					public Pair<Integer, RealVector> apply(Pair<Integer, List<RealVector>> pair) {
