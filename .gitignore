@@ -11,3 +11,6 @@
 /ApacheSparkTestsMgr/*.log
 *.log
 /example projects/GridGainMgr/target
+/ApacheIgniteTestsMgr/.classpath
+/ApacheIgniteTestsMgr/.project
+/ApacheIgniteTestsMgr/.settings/*.prefs

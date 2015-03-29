@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+     <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+        <!-- Set to local host address just for examples. -->
+        <property name="localHost" value="127.0.0.1"/>
+        <!-- Set to true to enable grid-aware class loading for examples, default is false. -->
+        <property name="peerClassLoadingEnabled" value="true"/>
+        
+        <property name="cacheConfiguration">
+        	<list>
+        		   <bean class="org.apache.ignite.configuration.CacheConfiguration">
+                    <property name="name" value="dataCache"/>
+                    <property name="cacheMode" value="PARTITIONED"/>
+                    <property name="backups" value="0" />
+                </bean>
+        	</list>
+        </property>
+
+        <property name="marshaller">
+            <bean class="org.apache.ignite.marshaller.optimized.OptimizedMarshaller">
+                <!-- Set to false to allow non-serializable objects in examples, default is true. -->
+                <property name="requireSerializable" value="false"/>
+            </bean>
+        </property>
+
+        <!-- Enable task execution events for examples. -->
+        <property name="includeEventTypes">
+            <util:constant static-field="org.apache.ignite.events.EventType.EVTS_TASK_EXECUTION"/>
+        </property>
+
+        <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+            	<property name="localAddress" value="192.168.1.100"/>
+                <property name="ipFinder">
+                    <!-- Uncomment multicast IP finder to enable multicast-based discovery of initial nodes. -->
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder"></bean>
+                   <!--  <bean class="org.gridgain.grid.spi.discovery.tcp.ipfinder.vm.GridTcpDiscoveryVmIpFinder">
+                        <property name="addresses">
+                            <list>
+                                <value>192.168.1.41:47500..47509</value>
+                                <value>192.168.1.33:47500..47509</value>
+                            </list>
+                        </property>
+                    </bean> -->
+                </property>
+            </bean>
+        </property>
+    </bean>
+</beans>
