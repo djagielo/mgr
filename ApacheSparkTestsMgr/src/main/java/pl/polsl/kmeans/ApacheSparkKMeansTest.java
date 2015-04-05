@@ -3,6 +3,7 @@ package pl.polsl.kmeans;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.spark.HashPartitioner;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -23,15 +24,22 @@ public class ApacheSparkKMeansTest{
 	private static final String SPLIT_MARK = ",";
 
   public static void main(String[] args) throws Exception {
-    if (args.length < 4) {
-      System.err.println("Usage: JavaKMeans <master> <file> <k> <convergeDist>");
+    if (args.length < 3) {
+      System.err.println("Usage: JavaKMeans <file> <k> <convergeDist>");
       System.exit(1);    
     }
 
-    String path = args[1];
-    int K = Integer.parseInt(args[2]);
-    double convergeDist = Double.parseDouble(args[3]);
-    SparkConf sparkConf = new SparkConf().setAppName("JavaKMeans").setMaster(args[0]);
+    String path = args[0];
+    int K = Integer.parseInt(args[1]);
+    double convergeDist = Double.parseDouble(args[2]);
+    String master = null;
+    if(args.length == 4)
+    	master = args[3];
+    
+    SparkConf sparkConf = new SparkConf().setAppName("JavaKMeans");
+    if(master != null)
+    	sparkConf.setMaster(master);
+    
     JavaSparkContext sc = new JavaSparkContext(sparkConf);
     long start = System.currentTimeMillis();
     JavaRDD<Vector> data = sc.textFile(path).map(
@@ -45,7 +53,13 @@ public class ApacheSparkKMeansTest{
       JavaPairRDD<Integer, Vector> closest = data.mapToPair(
     		  vector -> new Tuple2<Integer, Vector>(ApacheSparkKMeansHelper.closestPoint(vector, centroids), vector)
       );
-
+      
+      //TODO - think about partitioning by Integer key - it will distribute data in a way that all vectors of
+      // centroid will be on the same node - saving network traffic
+      // check performance of hashpartitioner and customPartitioner
+      
+      closest.partitionBy(new HashPartitioner(4));
+      
       // group by cluster id and average the vectors within each cluster to compute centroids
       JavaPairRDD<Integer, Iterable<Vector>> pointsGroup = closest.groupByKey();
       Map<Integer, Vector> newCentroids = pointsGroup.mapValues(
