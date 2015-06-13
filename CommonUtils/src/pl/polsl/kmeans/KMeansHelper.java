@@ -1,16 +1,13 @@
 package pl.polsl.kmeans;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -56,18 +53,38 @@ public class KMeansHelper implements Serializable {
 		return new ArrayRealVector(data);
 	}
 
-	public static List<RealVector> takeSample(List<RealVector> data, int size) {
+	public static List<RealVector> takeSample(List<?> data, int size){
 		List<RealVector> out = new LinkedList<>();
 		Random random = new Random(System.currentTimeMillis());
 		int s = data.size();
 		List<Integer> usedIndexes = new ArrayList<Integer>();
+		List<String> usedDoubleIndexes = new ArrayList<String>();
 		for (int i = 0; i < size; i++) {
 			int randomIndex = -1;
-			do {
-				randomIndex = random.nextInt(s - 1);
-			} while (randomIndex < 0 || usedIndexes.contains(randomIndex));
-			out.add(data.get(randomIndex));
-			usedIndexes.add(randomIndex);
+			if(s > 1){
+				do {
+					randomIndex = random.nextInt(s - 1);
+				} while (randomIndex < 0 || usedIndexes.contains(randomIndex));
+			}
+			else{
+				randomIndex = 0;
+			}
+			if(data.get(randomIndex) instanceof RealVector){
+				out.add((RealVector)data.get(randomIndex));
+				usedIndexes.add(randomIndex);
+			}
+			else if(data.get(randomIndex) instanceof List<?>){
+				int randomIndexSecond = -1;
+				RealVector randomVector = null;
+				do {
+					randomIndexSecond = random.nextInt(((List<?>)data.get(randomIndex)).size() - 1);
+					randomVector = (RealVector) ((List<RealVector>)data.get(randomIndex)).get(randomIndexSecond);
+				} while (usedDoubleIndexes.contains(String.format("%s_%s", randomIndex, randomIndexSecond)) || out.contains(randomVector));
+				out.add(randomVector);
+				String key = String.format("%s_%s", randomIndex, randomIndexSecond);
+				usedDoubleIndexes.add(key);
+			}
+			
 		}
 
 		return out;
@@ -82,5 +99,16 @@ public class KMeansHelper implements Serializable {
 		}
 
 		return out;
+	}
+	
+	public static void checkDuplicates(List<RealVector> in) throws Exception{
+		for(int i=0; i < in.size(); i++){
+			for(int j=0; j < in.size(); j++){
+				if(i != j){
+					if(in.get(i).equals(in.get(j)))
+						throw new Exception("DUPLICATE");
+				}
+			}
+		}
 	}
 }

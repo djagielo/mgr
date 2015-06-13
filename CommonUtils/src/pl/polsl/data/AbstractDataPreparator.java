@@ -30,16 +30,27 @@ public abstract class AbstractDataPreparator<T> {
 	}
 	
 	public List<T> getAllData(){
+		return getAllData(1).get(0);
+	}
+	
+	public List<List<T>> getAllData(int parts){
+		List<List<T>> finalResult = new LinkedList<>();
+		
+		for(int i = 0; i < parts; i++){
+			finalResult.add(new LinkedList<T>());
+		}
+		
 		if(br != null){
-			List<T> result = new LinkedList<>();
 			String line;
 			try {
+				int counter = 0;
 				while((line = br.readLine()) != null){
-					result.add(createObjectFromString(line));
+					finalResult.get(counter % parts).add(createObjectFromString(line));
+					counter++;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-				result=null;
+				finalResult=null;
 			}
 			finally{
 				if(br != null){
@@ -59,7 +70,7 @@ public abstract class AbstractDataPreparator<T> {
 				}
 			}
 			
-			return result;
+			return finalResult;
 		}
 		else
 			return null;
