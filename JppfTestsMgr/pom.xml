@@ -6,7 +6,7 @@
 	<version>0.0.1</version>
 	
 	<properties>
-		<jppf.version>5.0</jppf.version>
+		<jppf.version>5.0.2</jppf.version>
 	</properties>
 	
 	<dependencies>
