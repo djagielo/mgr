@@ -54,6 +54,7 @@ public class JppfKMeansTest3 {
 		        }
 		        
 		    	// 2. average the vectors within each cluster to compute centroids
+		        //TODO - remove job, it should be averaged as in Apache Ignite
 		        List<JPPFJob> groupByJobs = jobProvider.createGroupByAndAverageJobs(KMeansHelper.toListOfPairs(jobProvider.getClosestCentroidsMerger().getMergedResults().entrySet()),tasksPerJob);
 		        //client.submitJob(groupByJob);
 		        System.out.println(String.format("GroupByJobs size: %s", groupByJobs.size()));
