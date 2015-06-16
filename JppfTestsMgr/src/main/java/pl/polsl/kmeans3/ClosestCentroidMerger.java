@@ -29,6 +29,9 @@ public class ClosestCentroidMerger extends AbstractMerger<Map<Integer, List<Real
 					for(Task<?> task: tasks){
 						if(task instanceof ClosestCentroidAllocationTask){
 							ClosestCentroidAllocationTask t = (ClosestCentroidAllocationTask) task;
+							if(t.getException() != null){
+								t.getException().printStackTrace();
+							}
 							Map<Integer, RealVector> pairs = t.getResult();
 							for(Entry<Integer, RealVector> pair: pairs.entrySet()){
 								if(getMergedResults().containsKey(pair.getKey())){
