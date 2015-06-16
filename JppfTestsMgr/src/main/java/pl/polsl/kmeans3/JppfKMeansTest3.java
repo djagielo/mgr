@@ -80,6 +80,10 @@ public class JppfKMeansTest3 {
 		          centroids.set(t.getKey(), t.getValue());
 		        }
 		        
+		        // nulling vectors for each cache entry to prevent sending allData through network
+		        // it is already cached on nodes
+		        allData.stream().forEach(entry -> entry.setVectors(null));
+		        
 		        System.out.println("Finished iteration (delta = " + tempDist + ")");
 		    	
 		    }while(tempDist > convergeDist);
