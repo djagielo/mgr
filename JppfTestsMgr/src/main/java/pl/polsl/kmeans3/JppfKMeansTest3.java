@@ -8,6 +8,7 @@ import org.jppf.client.JPPFClient;
 import org.jppf.client.JPPFJob;
 
 import pl.polsl.data.RealVectorDataPreparator;
+import pl.polsl.data.beans.CacheEntry;
 import pl.polsl.kmeans.KMeansHelper;
 
 public class JppfKMeansTest3 {
@@ -27,9 +28,9 @@ public class JppfKMeansTest3 {
 		    
 		    RealVectorDataPreparator dp = new RealVectorDataPreparator(path, SPLIT_MARK);
 		    // reading all data to list
-		    List<RealVector> allData = dp.getAllData();
-		    dp.refreshDataSource();
-		    List<List<RealVector>> data = dp.getPartitionedData(partitionSize);
+		    List<CacheEntry<RealVector>> allData = dp.getAllDataCacheEntry(partitionSize);
+		    //dp.refreshDataSource();
+		    //List<List<RealVector>> data = dp.getPartitionedData(partitionSize);
 		    // take sample of K size
 		    final List<RealVector> centroids = KMeansHelper.takeSample(allData, K);
 		    SubmitQueue queue = new SubmitQueue(submitQueSize, client);
@@ -38,7 +39,7 @@ public class JppfKMeansTest3 {
 		    do{
 		    	// 1. allocate each vector to closest centroid and group by id
 		    	JobProvider jobProvider = new JobProvider();
-		    	List<JPPFJob> allocateJobs = jobProvider.createClosestCentroidsJobs(data, centroids,tasksPerJob);
+		    	List<JPPFJob> allocateJobs = jobProvider.createClosestCentroidsJobs(allData, centroids);
 		    	System.out.println(String.format("Allocate jobs size: %s", allocateJobs.size()));
 		    	for(JPPFJob job: allocateJobs)
 		    		queue.submit(job);

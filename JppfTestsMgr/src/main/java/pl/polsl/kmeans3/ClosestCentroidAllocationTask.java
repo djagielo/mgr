@@ -18,16 +18,37 @@ public class ClosestCentroidAllocationTask extends AbstractTask<Map<Integer, Rea
 	private static final long serialVersionUID = 7651750573322796575L;
 	private List<RealVector> vectors;
 	private List<RealVector> centroids;
+	private Integer key;
 	
-	public ClosestCentroidAllocationTask(List<RealVector> vectors, List<RealVector> centroids){
+	public ClosestCentroidAllocationTask(Integer key, List<RealVector> vectors, List<RealVector> centroids){
 		this.vectors = vectors;
 		this.centroids = centroids;
+		this.key = key;
 	}
 	
 	@Override
 	public void run() {
+		/*
+		 * Store sent vectors in local-cache
+		 */
+		System.out.println("********* RUN *********");
+		List<RealVector> tmpVectors = null;
+		if(vectors == null){
+			System.out.println("Get vectors from local cache");
+			// it's not first iteration - get data from local cache
+			tmpVectors = LocalVectorsCacheStore.getInstance().getVectors().get(key);
+		}
+		else{
+			// store data to local cache
+			System.out.println(String.format("Store vectors in local cache. Key: %s, vectors size: %s", key, vectors.size()));
+			LocalVectorsCacheStore.getInstance().getVectors().put(key, vectors);
+			tmpVectors = vectors;
+		}
+		
+		System.out.println("after reading/writing cache");
+		
 		List<Pair<Integer, RealVector>> tmp = new LinkedList<>();
-		for(RealVector vector: vectors){
+		for(RealVector vector: tmpVectors){
 			int i = KMeansHelper.closestPoint(vector, this.centroids);
 			System.out.println(String.format("Closest point: %s", i));
 			tmp.add(new ImmutablePair<Integer, RealVector>(i, vector));

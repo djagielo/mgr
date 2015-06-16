@@ -10,6 +10,8 @@ import org.apache.commons.math3.linear.RealVector;
 import org.jppf.JPPFException;
 import org.jppf.client.JPPFJob;
 
+import pl.polsl.data.beans.CacheEntry;
+
 public class JobProvider {
 	
 	private AtomicInteger submittedTasks;
@@ -24,22 +26,22 @@ public class JobProvider {
 		this.finishedTasks = new AtomicInteger();
 	}
 	
-	public JPPFJob createClosestCentroidsJob(List<List<RealVector>> data, List<RealVector> centroids) throws JPPFException{
+	public JPPFJob createClosestCentroidsJob(List<CacheEntry<RealVector>> data, List<RealVector> centroids) throws JPPFException{
 		submittedTasks.set(0);
 		finishedTasks.set(0);
 		JPPFJob job = new JPPFJob();
     	job.setName("closestCentroids");
     	this.closestCentroidsMerger = new ClosestCentroidMerger(finishedTasks);
     	job.addJobListener(this.closestCentroidsMerger);
-    	for(List<RealVector> vectors: data){
-    		job.add(new ClosestCentroidAllocationTask(vectors, centroids), null);
+    	for(CacheEntry<RealVector> vectors: data){
+    		job.add(new ClosestCentroidAllocationTask(vectors.getKey(), vectors.getVectors(), centroids), null);
     		submittedTasks.addAndGet(1);
     	}
     	
     	return job;
 	}
 	
-	public List<JPPFJob> createClosestCentroidsJobs(List<List<RealVector>> data, List<RealVector> centroids, int maxTasksPerJob) throws JPPFException{
+	public List<JPPFJob> createClosestCentroidsJobs(List<CacheEntry<RealVector>> data, List<RealVector> centroids) throws JPPFException{
 		submittedTasks.set(0);
 		finishedTasks.set(0);
 		
@@ -51,22 +53,16 @@ public class JobProvider {
 		this.closestCentroidsMerger = new ClosestCentroidMerger(finishedTasks);
 		job.addJobListener(this.closestCentroidsMerger);
 		
-		for(List<RealVector> vectors: data){
+		for(CacheEntry<RealVector> vectors: data){
 			if(job == null){
 				job = new JPPFJob();
 				job.setBlocking(false);
 				job.addJobListener(this.closestCentroidsMerger);
 			}
 			
-			job.add(new ClosestCentroidAllocationTask(vectors, centroids), null);
+			job.add(new ClosestCentroidAllocationTask(vectors.getKey(), vectors.getVectors(), centroids), null);
     		submittedTasks.addAndGet(1);
     		counter++;
-    		
-    		if(counter >= maxTasksPerJob){
-    			counter = 0;
-    			result.add(job);
-    			job = null;
-    		}
 		}
 		
 		if(job != null)
