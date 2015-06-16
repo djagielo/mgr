@@ -14,6 +14,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
+import pl.polsl.data.beans.CacheEntry;
+
 public class KMeansHelper implements Serializable {
 	/**
 	 * 
@@ -79,6 +81,17 @@ public class KMeansHelper implements Serializable {
 				do {
 					randomIndexSecond = random.nextInt(((List<?>)data.get(randomIndex)).size() - 1);
 					randomVector = (RealVector) ((List<RealVector>)data.get(randomIndex)).get(randomIndexSecond);
+				} while (usedDoubleIndexes.contains(String.format("%s_%s", randomIndex, randomIndexSecond)) || out.contains(randomVector));
+				out.add(randomVector);
+				String key = String.format("%s_%s", randomIndex, randomIndexSecond);
+				usedDoubleIndexes.add(key);
+			}
+			else if(data.get(randomIndex) instanceof CacheEntry<?>){
+				int randomIndexSecond = -1;
+				RealVector randomVector = null;
+				do {
+					randomIndexSecond = random.nextInt(((CacheEntry<?>)data.get(randomIndex)).getVectors().size() - 1);
+					randomVector = (RealVector) ((CacheEntry<RealVector>)data.get(randomIndex)).getVectors().get(randomIndexSecond);
 				} while (usedDoubleIndexes.contains(String.format("%s_%s", randomIndex, randomIndexSecond)) || out.contains(randomVector));
 				out.add(randomVector);
 				String key = String.format("%s_%s", randomIndex, randomIndexSecond);

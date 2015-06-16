@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import pl.polsl.data.beans.CacheEntry;
+
 public abstract class AbstractDataPreparator<T> {
 	public abstract T createObjectFromString(String str);
 	private File dictionaryFile;
@@ -76,6 +78,22 @@ public abstract class AbstractDataPreparator<T> {
 			return null;
 	}
 	
+	public List<CacheEntry<T>> getAllDataCacheEntry(int parts){
+		return wrapWithCacheEntry(getAllData(parts));
+	}
+	
+	private List<CacheEntry<T>> wrapWithCacheEntry(List<List<T>> allData) {
+		List<CacheEntry<T>> result = new LinkedList<>();
+		for(int i=0; i < allData.size(); i++){
+			CacheEntry<T> entry = new CacheEntry<T>();
+			entry.setKey(i);
+			entry.setVectors(allData.get(i));
+			result.add(entry);
+		}
+		
+		return result;
+	}
+
 	public List<List<T>> getPartitionedData(int partitionSize){
 		if(br != null && partitionSize > 0){
 			List<List<T>> result = new LinkedList<>();
