@@ -99,7 +99,7 @@ public class ApacheIgniteKmeansTest {
 				})));
 				
 				// average partial centroids from all nodes
-				Map<Integer, RealVector> newCentroids = averagePartialCentroids(partialCentroids);
+				Map<Integer, RealVector> newCentroids = KMeansHelper.averagePartialCentroids(partialCentroids);
 		    	
 				// computing distance
 				tempDist = 0.0;
@@ -122,30 +122,6 @@ public class ApacheIgniteKmeansTest {
 		}
 		
 	}
-	private static Map<Integer, RealVector> averagePartialCentroids(List<Map<Integer, RealVector>> partialCentroids) {
-		Map<Integer, List<RealVector>> tmp = new HashMap<>();
-		
-		partialCentroids.forEach(el -> {
-			el.entrySet().forEach(mapEl -> {
-				if(tmp.containsKey(mapEl.getKey())){
-					List<RealVector> tmpList = tmp.get(mapEl.getKey());
-					tmpList.add(mapEl.getValue());
-				}
-				else{
-					List<RealVector> tmpList = new LinkedList<>();
-					tmpList.add(mapEl.getValue());
-					tmp.put(mapEl.getKey(), tmpList);
-				}
-			});
-		});
-		
-		Map<Integer, RealVector> result =new HashMap<>();
-		
-		tmp.entrySet().stream().forEach(entry -> {
-			result.put(entry.getKey(), KMeansHelper.average(entry.getValue()));
-		});
-		
-		return result;
-	}
+
 
 }

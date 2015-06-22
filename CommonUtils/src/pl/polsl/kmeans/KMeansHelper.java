@@ -3,8 +3,10 @@ package pl.polsl.kmeans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -123,5 +125,31 @@ public class KMeansHelper implements Serializable {
 				}
 			}
 		}
+	}
+	
+	public static Map<Integer, RealVector> averagePartialCentroids(List<Map<Integer, RealVector>> partialCentroids) {
+		Map<Integer, List<RealVector>> tmp = new HashMap<>();
+		
+		partialCentroids.forEach(el -> {
+			el.entrySet().forEach(mapEl -> {
+				if(tmp.containsKey(mapEl.getKey())){
+					List<RealVector> tmpList = tmp.get(mapEl.getKey());
+					tmpList.add(mapEl.getValue());
+				}
+				else{
+					List<RealVector> tmpList = new LinkedList<>();
+					tmpList.add(mapEl.getValue());
+					tmp.put(mapEl.getKey(), tmpList);
+				}
+			});
+		});
+		
+		Map<Integer, RealVector> result =new HashMap<>();
+		
+		tmp.entrySet().stream().forEach(entry -> {
+			result.put(entry.getKey(), KMeansHelper.average(entry.getValue()));
+		});
+		
+		return result;
 	}
 }
