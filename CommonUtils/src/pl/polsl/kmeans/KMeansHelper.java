@@ -144,9 +144,13 @@ public class KMeansHelper implements Serializable {
 			});
 		});
 		
+		return averagePartialCentroidsList(tmp);
+	}
+	
+	public static Map<Integer, RealVector> averagePartialCentroidsList(Map<Integer, List<RealVector>> partialCentroids){
 		Map<Integer, RealVector> result =new HashMap<>();
 		
-		tmp.entrySet().stream().forEach(entry -> {
+		partialCentroids.entrySet().stream().forEach(entry -> {
 			result.put(entry.getKey(), KMeansHelper.average(entry.getValue()));
 		});
 		
