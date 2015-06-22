@@ -53,24 +53,9 @@ public class JppfKMeansTest3 {
 		          }
 		        }
 		        
-		    	// 2. average the vectors within each cluster to compute centroids
-		        //TODO - remove job, it should be averaged as in Apache Ignite
-		        List<JPPFJob> groupByJobs = jobProvider.createGroupByAndAverageJobs(KMeansHelper.toListOfPairs(jobProvider.getClosestCentroidsMerger().getMergedResults().entrySet()),tasksPerJob);
-		        //client.submitJob(groupByJob);
-		        System.out.println(String.format("GroupByJobs size: %s", groupByJobs.size()));
-		        for(JPPFJob job: groupByJobs)
-		        	queue.submit(job);
+		        Map<Integer, List<RealVector>> partialCentroids = jobProvider.getClosestCentroidsMerger().getMergedResults();
 		        
-		        // waiting for all jobs gets done
-		    	Object lock2 = new Object();
-		        // wait until all job results have been processed
-		        while (jobProvider.getProcessedTasksCount() < jobProvider.getSubmittedTasksCount()) {
-		          synchronized(lock2) {
-		            lock2.wait(1L);
-		          }
-		        }
-		        
-		        Map<Integer, RealVector> newCentroids = jobProvider.getNewCentroidsMerger().getMergedResults();
+		        Map<Integer, RealVector> newCentroids = KMeansHelper.averagePartialCentroidsList(partialCentroids);
 		        
 		    	// 3. compute new centroids
 		    	tempDist = 0.0;
