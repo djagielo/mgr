@@ -13,6 +13,7 @@
 		<module>ApacheIgniteTestsMgr</module>
 		<module>ApacheSparkTestsMgr</module>
 		<module>JppfTestsMgr</module>
+		<module>CommonUtils</module>
 	</modules>
 
 	<properties>
