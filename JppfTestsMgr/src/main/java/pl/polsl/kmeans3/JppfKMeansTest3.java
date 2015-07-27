@@ -31,8 +31,14 @@ public class JppfKMeansTest3 {
 		    List<CacheEntry<RealVector>> allData = dp.getAllDataCacheEntry(partitionSize);
 		    //dp.refreshDataSource();
 		    //List<List<RealVector>> data = dp.getPartitionedData(partitionSize);
+		    
 		    // take sample of K size
 		    final List<RealVector> centroids = KMeansHelper.takeSample(allData, K);
+		   
+		    /*FAKING takeSample method for testing
+		    RealVectorDataPreparator rvdp = new RealVectorDataPreparator(JppfKMeansTest3.class.getClassLoader().getResource("testdata/sample.txt").getFile(), SPLIT_MARK);
+		    final List<RealVector> centroids = rvdp.getAllData();*/
+		    
 		    SubmitQueue queue = new SubmitQueue(submitQueSize, client);
 		    long start = System.currentTimeMillis();
 		    double tempDist;
@@ -73,6 +79,10 @@ public class JppfKMeansTest3 {
 		        System.out.println("Finished iteration (delta = " + tempDist + ")");
 		    	
 		    }while(tempDist > convergeDist);
+		    
+		    for (RealVector c : centroids)
+		        System.out.println(c);
+		    queue.stop();
 		    System.out.println(String.format("JppfKMeansTest executed in %s[ms]", (System.currentTimeMillis() - start)));
 		
 		}
