@@ -14,3 +14,4 @@
 /ApacheIgniteTestsMgr/.classpath
 /ApacheIgniteTestsMgr/.project
 /ApacheIgniteTestsMgr/.settings/*.prefs
+/ApacheIgniteTestsMgr/src/main/resources/testdata/dailySportsActivitiesCumulated.txt
