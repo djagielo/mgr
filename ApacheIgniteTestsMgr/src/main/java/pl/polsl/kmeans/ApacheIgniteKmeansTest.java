@@ -114,6 +114,9 @@ public class ApacheIgniteKmeansTest {
 		        System.out.println("Finished iteration (delta = " + tempDist + ")");
 			}while(tempDist > convergeDist);
 		   
+		    for (RealVector c : centroids)
+		        System.out.println(c);
+			
 			System.out.println(String.format("Algorithm finished: %s[ms]", (System.currentTimeMillis() - start)));
 			
 		}
