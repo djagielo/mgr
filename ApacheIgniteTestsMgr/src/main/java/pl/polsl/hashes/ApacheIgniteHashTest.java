@@ -11,7 +11,7 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.lang.IgniteClosure;
 import org.apache.log4j.Logger;
 
-import pl.polsl.data.StringDataPreparator;
+import pl.polsl.data.ByteArrayDataPreparator;
 import pl.polsl.utils.hashes.AvailableHashes;
 import pl.polsl.utils.hashes.MultipleHashUtil;
 
@@ -30,18 +30,18 @@ public class ApacheIgniteHashTest {
 		Integer partitionSize = Integer.parseInt(args[2]);
 		
 		try (Ignite g = Ignition.start(config)) {
-			List<List<String>> data = prepareDataForTest(file, partitionSize);
+			List<List<byte[]>> data = prepareDataForTest(file, partitionSize);
 			long start = System.currentTimeMillis();
-			Collection<Map<String, Map<String, String>>> result = g.compute(g.cluster().forRemotes()).apply(new IgniteClosure<List<String>, Map<String, Map<String, String>>>() {
+			Collection<Map<String, Map<String, byte[]>>> result = g.compute(g.cluster().forRemotes()).apply(new IgniteClosure<List<byte[]>, Map<String, Map<String, byte[]>>>() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public Map<String, Map<String, String>> apply(List<String> particle) {
+				public Map<String, Map<String, byte[]>> apply(List<byte[]> particle) {
 					MultipleHashUtil hashUtil = new MultipleHashUtil(ALL_HASHES_ARRAY);
-					Map<String, Map<String, String>> results = new HashMap<>();
-					for(String s: particle){
+					Map<String, Map<String, byte[]>> results = new HashMap<>();
+					for(byte[] s: particle){
 						System.out.println(String.format("Computing hashes for %s", s));
-						results.put(s, hashUtil.getHashes(s));
+						results.put(new String(s), hashUtil.getHashes(s));
 					}
 					
 					return results;
@@ -52,9 +52,9 @@ public class ApacheIgniteHashTest {
 		}
 	}
 	
-	private static List<List<String>> prepareDataForTest(String path, int partitionSize){
-		StringDataPreparator dp = new StringDataPreparator(path);
-		
+	private static List<List<byte[]>> prepareDataForTest(String path, int partitionSize){
+		//StringDataPreparator dp = new StringDataPreparator(path);
+		ByteArrayDataPreparator dp = new ByteArrayDataPreparator(path);
 		return dp.getPartitionedData(partitionSize);
 	}
 

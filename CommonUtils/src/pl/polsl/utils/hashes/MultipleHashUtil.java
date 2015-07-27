@@ -23,8 +23,8 @@ public class MultipleHashUtil {
 		}
 	}
 	
-	public Map<String, String> getHashes(String word){
-		Map<String, String> out = new HashMap<String, String>();
+	public Map<String, byte[]> getHashes(byte[] word){
+		Map<String, byte[]> out = new HashMap<String, byte[]>();
 		for(MessageDigest md: mds){
 			out.put(md.getAlgorithm(), getHashForMd(md, word));
 		}
@@ -32,16 +32,21 @@ public class MultipleHashUtil {
 		return out;
 	}
 	
-	private String getHashForMd(MessageDigest md, String word){
+	public Map<String, byte[]> getHashes(String word){
+		return getHashes(word.getBytes());
+	}
+	
+	private byte[] getHashForMd(MessageDigest md, byte[] word){
 		if(md != null){
-			md.update(word.getBytes());
-			byte[] bytes = md.digest();
+			md.update(word);
+			return md.digest();
+			/*byte[] bytes = md.digest();
 			 StringBuilder sb = new StringBuilder();
 	         for(int i=0; i< bytes.length ;i++)
 	         {
 	             sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
 	         }
-	         return sb.toString();
+	         return sb.toString();*/
 		}
 		else
 			return null;
@@ -55,7 +60,7 @@ public class MultipleHashUtil {
 		*/
 		long start = System.nanoTime();
 		MultipleHashUtil util = new MultipleHashUtil(AvailableHashes.SHA256, AvailableHashes.SHA512, AvailableHashes.MD5, AvailableHashes.MD2, AvailableHashes.SHA384);
-		System.out.println(util.getHashes("afdasa"));
+		System.out.println(util.getHashes("afdasa".getBytes()));
 		System.out.println(String.format("All time: %s[ns]", (System.nanoTime() - start)));
 	}
 }

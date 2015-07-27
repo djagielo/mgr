@@ -7,8 +7,9 @@ import java.util.Map;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function;
 
-import pl.polsl.data.StringDataPreparator;
+import pl.polsl.data.ByteArrayDataPreparator;
 import pl.polsl.utils.hashes.AvailableHashes;
 import pl.polsl.utils.hashes.MultipleHashUtil;
 
@@ -27,23 +28,30 @@ public class ApacheSparkHashTest{
 		SparkConf sparkConf = new SparkConf().setAppName("ApacheSparkHashTest").setMaster(master);
 	    JavaSparkContext jsc = new JavaSparkContext(sparkConf);
 	    
-	    List<List<String>> data = prepareDataForTest(partitionSize, file);
+	    List<List<byte[]>> data = prepareDataForTest(partitionSize, file);
 	    
 	    long start = System.currentTimeMillis();
-	    JavaRDD<List<String>> parallelData = jsc.parallelize(data);
+	    JavaRDD<List<byte[]>> parallelData = jsc.parallelize(data);
 	    
 	    @SuppressWarnings("resource")
-		JavaRDD<Map<String, Map<String, String>>> result = parallelData.map( particle -> {
+	    JavaRDD<Map<String, Map<String, byte[]>>> result = parallelData.map(new Function<List<byte[]>, Map<String, Map<String, byte[]>>>() {
+
+			@Override
+			public Map<String, Map<String, byte[]>> call(List<byte[]> particle)throws Exception {
 				MultipleHashUtil hashUtil = new MultipleHashUtil(ALL_HASHES_ARRAY);
-				Map<String, Map<String, String>> results = new HashMap<>();
-				for(String s: particle){
+				Map<String, Map<String, byte[]>> results = new HashMap<>();
+				for(byte[] s: particle){
+					
 					System.out.println(String.format("Computing hashes for %s", s));
-					results.put(s, hashUtil.getHashes(s));
+					results.put(new String(s), hashUtil.getHashes(s));
 				}
-				
+				long res = 1;
+				for(int i=1; i < 100000; i++){
+					res = res*i;
+				}
 				return results;
 			}
-		);
+		});
 	    
 	    result.collect();
 	    
@@ -52,9 +60,9 @@ public class ApacheSparkHashTest{
 	    System.out.println(String.format("ApacheSparkHashTest executed in: %s[ms]", (System.currentTimeMillis() - start)));
 	}
 	
-	private static List<List<String>> prepareDataForTest(int partitionSize, String path){
-		StringDataPreparator dp = new StringDataPreparator(path);
-		
+	private static List<List<byte[]>> prepareDataForTest(int partitionSize, String path){
+		//StringDataPreparator dp = new StringDataPreparator(path);
+		ByteArrayDataPreparator dp = new ByteArrayDataPreparator(path);
 		return dp.getPartitionedData(partitionSize);
 	}
 

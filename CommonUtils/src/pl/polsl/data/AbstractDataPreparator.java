@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -96,17 +97,17 @@ public abstract class AbstractDataPreparator<T> {
 
 	public List<List<T>> getPartitionedData(int partitionSize){
 		if(br != null && partitionSize > 0){
-			List<List<T>> result = new LinkedList<>();
+			List<List<T>> result = new ArrayList<>();
 			String line;
 			try {
-				List<T> embeddedList = new LinkedList<>();
+				List<T> embeddedList = new ArrayList<>();
 				int counter = 0;
 				while((line = br.readLine()) != null){
 					embeddedList.add(createObjectFromString(line));
 					counter++;
 					if(counter == partitionSize){
 						result.add(embeddedList);
-						embeddedList = new LinkedList<>();
+						embeddedList = new ArrayList<>();
 						counter = 0;
 					}
 				}
