@@ -45,10 +45,7 @@ public class ApacheSparkHashTest{
 					System.out.println(String.format("Computing hashes for %s", s));
 					results.put(new String(s), hashUtil.getHashes(s));
 				}
-				long res = 1;
-				for(int i=1; i < 100000; i++){
-					res = res*i;
-				}
+
 				return results;
 			}
 		});
