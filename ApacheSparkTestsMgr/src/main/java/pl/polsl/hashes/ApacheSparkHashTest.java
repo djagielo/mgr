@@ -32,9 +32,9 @@ public class ApacheSparkHashTest{
 	    
 	    long start = System.currentTimeMillis();
 	    JavaRDD<List<byte[]>> parallelData = jsc.parallelize(data);
-	    
-	    @SuppressWarnings("resource")
+	   
 	    JavaRDD<Map<String, Map<String, byte[]>>> result = parallelData.map(new Function<List<byte[]>, Map<String, Map<String, byte[]>>>() {
+			private static final long serialVersionUID = -7872665817876210016L;
 
 			@Override
 			public Map<String, Map<String, byte[]>> call(List<byte[]> particle)throws Exception {
@@ -54,7 +54,9 @@ public class ApacheSparkHashTest{
 	    
 	    if(jsc != null)
 	    	jsc.close();
+	    System.out.println("*\n*\n*\n*\n");
 	    System.out.println(String.format("ApacheSparkHashTest executed in: %s[ms]", (System.currentTimeMillis() - start)));
+	    System.out.println("*\n*\n*\n*\n");
 	}
 	
 	private static List<List<byte[]>> prepareDataForTest(int partitionSize, String path){
