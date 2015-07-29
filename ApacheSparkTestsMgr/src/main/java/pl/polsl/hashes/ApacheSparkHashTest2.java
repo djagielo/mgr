@@ -1,7 +1,6 @@
 package pl.polsl.hashes;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.spark.SparkConf;
@@ -9,7 +8,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 
-import pl.polsl.data.ByteArrayDataPreparator;
 import pl.polsl.utils.hashes.AvailableHashes;
 import pl.polsl.utils.hashes.MultipleHashUtil;
 
@@ -55,12 +53,6 @@ public class ApacheSparkHashTest2{
 	    System.out.println("*\n*\n*\n*\n");
 	    System.out.println(String.format("ApacheSparkHashTest executed in: %s[ms]", (System.currentTimeMillis() - start)));
 	    System.out.println("*\n*\n*\n*\n");
-	}
-	
-	private static List<List<byte[]>> prepareDataForTest(int partitionSize, String path){
-		//StringDataPreparator dp = new StringDataPreparator(path);
-		ByteArrayDataPreparator dp = new ByteArrayDataPreparator(path);
-		return dp.getPartitionedData(partitionSize);
 	}
 
 }
