@@ -1,6 +1,7 @@
 package pl.polsl.hashes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.spark.SparkConf;
@@ -46,7 +47,7 @@ public class ApacheSparkHashTest2{
 			}
 		});
 	    
-	    result.collect();
+	    List<Map<String, Map<String, byte[]>>> finalResult = result.collect();
 	    
 	    if(jsc != null)
 	    	jsc.close();

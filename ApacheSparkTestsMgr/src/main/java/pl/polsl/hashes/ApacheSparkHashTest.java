@@ -50,7 +50,7 @@ public class ApacheSparkHashTest{
 			}
 		});
 	    
-	    result.collect();
+	    List<Map<String, Map<String, byte[]>>> finalResult = result.collect();
 	    
 	    if(jsc != null)
 	    	jsc.close();

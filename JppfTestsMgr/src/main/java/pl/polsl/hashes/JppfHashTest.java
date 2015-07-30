@@ -1,5 +1,6 @@
 package pl.polsl.hashes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ public class JppfHashTest {
 			
 			List<List<byte[]>> data = prepareDataForTest(file, partitionSize);
 			
+			long start = System.currentTimeMillis();
+			
 			logger.debug("Adding tasks to job");
 			for(final List<byte[]> particle: data){
 					job.add(new JPPFTask() {
@@ -57,10 +60,13 @@ public class JppfHashTest {
 			
 			job.setBlocking(true);
 			
-			System.out.println("Job submit");
+			System.out.println(String.format("*\n*\n*\nJob submit after %s[ms]*\n*\n*\n", (System.currentTimeMillis() - start)));
 			
-			long start = System.currentTimeMillis();
+			List<Map<String, Map<String, byte[]>>> result = new ArrayList<>();
 			List<Task<?>> results = client.submitJob(job);
+			for(Task<?> resultTask: results){
+				result.add((Map<String, Map<String, byte[]>>)resultTask.getResult());
+			}
 			System.out.println(String.format("JppfHashTest executed in %s[ms]", (System.currentTimeMillis() - start)));
 			
 		} catch (JPPFException e) {
