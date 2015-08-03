@@ -47,7 +47,7 @@ public class ApacheSparkKMeansTest{
     		line -> ApacheSparkKMeansHelper.parseVector(line, SPLIT_MARK)
     ).cache();
 
-    final List<Vector> centroids = data.takeSample(false, K, 42);
+    final List<Vector> centroids = data.takeSample(false, K, System.currentTimeMillis());
     //RealVectorDataPreparator rvdp = new RealVectorDataPreparator("C:\\Work\\Programming\\MA\\dane\\sample.txt", SPLIT_MARK);
     //final List<Vector> centroids = realVectorToVector(rvdp.getAllData());
     double tempDist;
