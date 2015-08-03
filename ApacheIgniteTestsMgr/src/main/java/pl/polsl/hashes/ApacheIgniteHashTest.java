@@ -48,7 +48,7 @@ public class ApacheIgniteHashTest {
 				}
 			}, data);
 			  
-			System.out.println(String.format("*\n*\n*\nGridGainHashTest executed in: %s[ms]*\n*\n*\n", (System.currentTimeMillis() - start)));
+			System.out.println(String.format("*\n*\n*\nApacheIgniteHashTest executed in: %s[ms]*\n*\n*\n", (System.currentTimeMillis() - start)));
 		}
 	}
 	
