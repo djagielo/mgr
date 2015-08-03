@@ -49,4 +49,14 @@ public class ApacheIgniteKmeansDataStreamer {
 			throw new IllegalStateException("First use load() method to load data before taking samples");
 		}
 	}
+	
+	public List<RealVector> takeSample(int k, boolean fake){
+		if(this.allData != null){
+			RealVectorDataPreparator rvdp = new RealVectorDataPreparator("C:\\Work\\Programming\\MA\\dane\\sample.txt", SPLIT_MARK);
+			return rvdp.getAllData();
+		}
+		else{
+			throw new IllegalStateException("First use load() method to load data before taking samples");
+		}
+	}
 }
