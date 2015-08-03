@@ -1,9 +1,10 @@
 package pl.polsl.kmeans;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.spark.HashPartitioner;
+import org.apache.commons.math3.linear.RealVector;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -47,6 +48,8 @@ public class ApacheSparkKMeansTest{
     ).cache();
 
     final List<Vector> centroids = data.takeSample(false, K, 42);
+    //RealVectorDataPreparator rvdp = new RealVectorDataPreparator("C:\\Work\\Programming\\MA\\dane\\sample.txt", SPLIT_MARK);
+    //final List<Vector> centroids = realVectorToVector(rvdp.getAllData());
     double tempDist;
     do {
       // allocate each vector to closest centroid   	
@@ -58,7 +61,7 @@ public class ApacheSparkKMeansTest{
       // centroid will be on the same node - saving network traffic
       // check performance of hashpartitioner and customPartitioner
       
-      closest.partitionBy(new HashPartitioner(4));
+      //closest.partitionBy(new HashPartitioner(4));
       
       // group by cluster id and average the vectors within each cluster to compute centroids
       JavaPairRDD<Integer, Iterable<Vector>> pointsGroup = closest.groupByKey();
@@ -87,6 +90,15 @@ public class ApacheSparkKMeansTest{
 
     sc.close();
     System.exit(0);
-
   }
+
+	private static List<Vector> realVectorToVector(List<RealVector> allData) {
+		List<Vector> result = new ArrayList<Vector>();
+		
+		for(RealVector vector: allData){
+			result.add(new Vector(vector.toArray()));
+		}
+		
+		return result;
+	}
 }
