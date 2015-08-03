@@ -44,7 +44,7 @@ public class ApacheIgniteKmeansTest {
 			final List<RealVector> centroids = data.takeSample(K);
 			
 			// for debug reason - testing method testSample
-			KMeansHelper.checkDuplicates(centroids);
+			//KMeansHelper.checkDuplicates(centroids);
 			
 			/** Displaying local cache storage - for tests **/
 		/*	ignite.compute().broadcast( () -> {
