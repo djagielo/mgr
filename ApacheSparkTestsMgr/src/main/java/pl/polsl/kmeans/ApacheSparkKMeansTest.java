@@ -79,7 +79,7 @@ public class ApacheSparkKMeansTest{
         centroids.set(t.getKey(), t.getValue());
       }
   	
-      System.out.println("Finished iteration (delta = " + tempDist + ")");
+      System.out.println(String.format("Finished iteration (delta = %s): %s[ms]",tempDist, (System.currentTimeMillis() - start)));
     } while (tempDist > convergeDist);
 
     System.out.println(String.format("Final centers(%s):", centroids.size()));

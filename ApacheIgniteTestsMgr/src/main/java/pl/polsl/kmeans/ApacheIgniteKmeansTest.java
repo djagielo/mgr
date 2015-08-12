@@ -9,11 +9,15 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
+import javax.cache.Cache;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.lang.IgniteCallable;
 
 import pl.polsl.kmeans.data.ApacheIgniteKmeansDataStreamer;
@@ -34,7 +38,7 @@ public class ApacheIgniteKmeansTest {
 		
 		try(Ignite ignite = Ignition.start(config)){
 			int clusterSize = ignite.cluster().forRemotes().nodes().size();
-			ApacheIgniteKmeansDataStreamer data = new ApacheIgniteKmeansDataStreamer(ignite, file, CACHE_NAME, clusterSize);	
+			ApacheIgniteKmeansDataStreamer data = new ApacheIgniteKmeansDataStreamer(ignite, file, CACHE_NAME, clusterSize*4);	
 	
 			System.out.println(String.format("Remote nodes cluster size: %s", clusterSize));
 			// loading data to Data Grid
@@ -47,14 +51,14 @@ public class ApacheIgniteKmeansTest {
 			//KMeansHelper.checkDuplicates(centroids);
 			
 			/** Displaying local cache storage - for tests **/
-		/*	ignite.compute().broadcast( () -> {
+			ignite.compute().broadcast( () -> {
     			IgniteCache<Object, Object> c= ignite.cache("dataCache");
 				System.out.println("RUN");
     			for(Cache.Entry<Object, Object> obj: c.localEntries(CachePeekMode.PRIMARY)){
-    			System.out.println(String.format("%s: %s", obj.getKey(), obj.getValue()));
+    			System.out.println(String.format("%s: %s", obj.getKey(), ""));
 				}
     			
-    		});	*/
+    		});	
 			
 			// K-means iterations
 			double tempDist = 0.0;
@@ -62,7 +66,7 @@ public class ApacheIgniteKmeansTest {
 			do{
 				// partial Centroids - each element is result from one node in cluster
 				List<Map<Integer, RealVector>> partialCentroids = new ArrayList<>();
-				IntStream.range(0, clusterSize).forEach(cacheKey -> partialCentroids.add(ignite.compute(ignite.cluster().forRemotes()).affinityCall(CACHE_NAME, cacheKey, new IgniteCallable<Map<Integer, RealVector>>() {
+				IntStream.range(0, clusterSize+1).forEach(cacheKey -> partialCentroids.add(ignite.compute(ignite.cluster().forRemotes()).affinityCall(CACHE_NAME, cacheKey, new IgniteCallable<Map<Integer, RealVector>>() {
 					private static final long serialVersionUID = 2298427843275191441L;
 
 					@Override
@@ -111,7 +115,7 @@ public class ApacheIgniteKmeansTest {
 		          centroids.set(t.getKey(), t.getValue());
 		        }
 		        
-		        System.out.println("Finished iteration (delta = " + tempDist + ")");
+		        System.out.println(String.format("Finished iteration (delta = %s): %s[ms]", tempDist, (System.currentTimeMillis() - start)));
 			}while(tempDist > convergeDist);
 		   
 		    for (RealVector c : centroids)
